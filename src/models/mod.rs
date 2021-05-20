@@ -51,7 +51,7 @@ pub struct AuthenticatedUser {
     pub user_role: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Validate, sqlx:FromRow)]
+#[derive(Serialize, Deserialize, Debug, Validate, sqlx::FromRow)]
 pub struct Manufacturer {
     pub manufacturer_id: usize,
     pub contract_id: usize,
@@ -61,8 +61,8 @@ pub struct Manufacturer {
     pub country: String,
     pub addr_city: String,
     pub addr_street: String,
-    #[validate(len = 5)]
+    #[validate(length(equal = 5))]
     pub addr_postal: String,
-    #[validate(phone)]
+    #[validate(length(equal = 13))]
     pub tel_num: String,
 }

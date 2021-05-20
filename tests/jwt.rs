@@ -1,4 +1,4 @@
-use async_pobaram;
+use supermarket_management_system;
 
 #[test]
 fn app_req_claim_deserializarion() {

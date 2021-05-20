@@ -1,7 +1,7 @@
 use actix_web::{middleware::Logger, App, HttpServer};
-use async_pobaram::db::UserRepository;
-use async_pobaram::*;
 use std::sync::Arc;
+use supermarket_management_system::db::UserRepository;
+use supermarket_management_system::*;
 use tracing::info;
 
 #[actix_web::main]

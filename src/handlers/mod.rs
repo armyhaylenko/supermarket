@@ -2,6 +2,7 @@ use crate::config::crypto::CryptoService;
 use crate::db::UserRepository;
 use crate::models::NewUser;
 use crate::utils;
+use crate::utils::has_auth_level;
 use actix_web::http::header::ToStrError;
 use actix_web::http::{HeaderMap, HeaderValue};
 use actix_web::{
@@ -26,9 +27,7 @@ pub async fn create_new_user(
     user_repo: web::Data<Arc<UserRepository>>,
     crypto_svc: web::Data<Arc<CryptoService>>,
 ) -> impl Responder {
-    let maybe_role = utils::handle_auth(&req);
-
-    if !maybe_role.contains::<String>(&"manager".to_owned()) {
+    if !has_auth_level(&req, "manager".to_owned()) {
         HttpResponse::Unauthorized().body("The authorization header is not present or is malformed.")
     } else {
         let new_user_unvalidated = form.0;
@@ -47,8 +46,7 @@ pub async fn create_new_user(
 pub async fn get_user(req: HttpRequest, user_repo: web::Data<Arc<UserRepository>>) -> impl Responder {
     let username = String::from(req.match_info().get("username").unwrap());
 
-    let maybe_role = utils::handle_auth(&req);
-    if !maybe_role.contains::<String>(&String::from("manager")) {
+    if !has_auth_level(&req, "manager".to_owned()) {
         HttpResponse::Unauthorized().body("The authorization header is not present or is malformed.")
     } else {
         match user_repo.get_user_by_username(username.clone()).await {
@@ -69,6 +67,12 @@ pub async fn get_user(req: HttpRequest, user_repo: web::Data<Arc<UserRepository>
             )),
         }
     }
+}
+
+#[post("/employee")] // ?action={create, delete, update}
+pub async fn employee(req: HttpRequest) -> impl Responder {
+    todo!();
+    HttpResponse::Ok().finish()
 }
 
 pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {

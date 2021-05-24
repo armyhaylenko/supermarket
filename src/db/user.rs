@@ -17,7 +17,7 @@ impl UserRepository {
     pub async fn create_user(&self, user: NewUser, crypto_svc: &CryptoService) -> Result<User> {
         let pwd_hash = crypto_svc.hash_password(&user.password[..]).await?;
 
-        let add_user_sql = std::fs::read_to_string("sql/add_user.sql").expect("SQL not found in resources");
+        let add_user_sql = std::fs::read_to_string("sql/add_user.sql")?;
 
         let user_in_db: User = sqlx::query_as::<_, User>(&add_user_sql[..])
             .bind(&user.username)
@@ -31,7 +31,7 @@ impl UserRepository {
     }
 
     pub async fn get_user_by_username(&self, username: String) -> Result<Option<User>> {
-        let get_user_sql = fs::read_to_string("sql/get_user.sql").expect("SQL not found in resources");
+        let get_user_sql = fs::read_to_string("sql/get_user.sql")?;
 
         let maybe_user: Option<User> = sqlx::query_as(&get_user_sql[..]).bind(username).fetch_optional(&*self.pool).await?;
 

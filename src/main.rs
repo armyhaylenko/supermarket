@@ -1,6 +1,6 @@
 use actix_web::{middleware::Logger, App, HttpServer};
 use std::sync::Arc;
-use supermarket_management_system::db::UserRepository;
+use supermarket_management_system::db::{SupermarketRepository, UserRepository};
 use supermarket_management_system::*;
 use tracing::info;
 
@@ -17,6 +17,7 @@ pub async fn main() -> std::io::Result<()> {
     let crypto_service = Arc::new(config::crypto::CryptoService::new(secret_key));
 
     let user_repository = Arc::new(UserRepository::new(connection_pool.clone()));
+    let shop_repository = Arc::new(SupermarketRepository::new(connection_pool.clone()));
 
     info!("Starting server at http://{}:{}", connection_config.host, connection_config.port);
 
@@ -26,6 +27,7 @@ pub async fn main() -> std::io::Result<()> {
             .data(connection_pool.clone())
             .data(crypto_service.clone())
             .data(user_repository.clone())
+            .data(shop_repository.clone())
             .configure(handlers::init_app_config)
     })
     .bind(format!("{}:{}", connection_config.host, connection_config.port))?

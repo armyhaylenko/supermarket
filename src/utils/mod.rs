@@ -30,3 +30,9 @@ pub fn handle_auth(req: &HttpRequest) -> Result<String> {
         None => Err(Report::msg("No authorization header was provided.")),
     }
 }
+
+pub fn has_auth_level(req: &HttpRequest, auth_level: String) -> bool {
+    let auth = handle_auth(&req);
+
+    auth.contains(&auth_level)
+}

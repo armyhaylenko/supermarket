@@ -139,6 +139,37 @@ pub struct ClientCard {
     pub discount_rate: Decimal,
 }
 
-// pub struct Waybill {
-//     pub
-// }
+#[derive(Serialize, Debug, Deserialize, Validate, sqlx::FromRow)]
+pub struct Waybill {
+    pub waybill_id: Option<i32>,
+    pub waybill_date: NaiveDateTime,
+    pub base_price: Decimal,
+    pub waybill_sum: Decimal,
+    pub qty: i32,
+    #[validate(length(equal = 12))]
+    pub product_upc: String,
+    pub manufacturer_id: i32,
+    pub empl_id: i32,
+}
+
+#[derive(Serialize, Debug, Deserialize, Validate, sqlx::FromRow)]
+pub struct ReturnAgreement {
+    pub return_agreement_id: Option<i32>,
+    pub sign_date: NaiveDateTime,
+    pub qty: i32,
+    pub return_agreement_sum: Decimal,
+    #[validate(length(equal = 12))]
+    pub product_upc: String,
+    pub manufacturer_id: i32,
+    pub empl_id: i32,
+}
+
+#[derive(Serialize, Debug, Deserialize, Validate, sqlx::FromRow)]
+pub struct Recepit {
+    pub receipt_id: Option<i32>,
+    pub receipt_date: NaiveDateTime,
+    pub receipt_sum: Decimal,
+    #[sqlx(rename = "VAT")]
+    pub vat: Decimal,
+    pub client_card_id: Option<i32>,
+}

@@ -18,7 +18,7 @@ pub enum Action<T> {
 impl<T> Action<T> {
     pub async fn from_req(req: &HttpRequest, body: T) -> Result<Action<T>> {
         let hash_map: Result<HashMap<String, String>> = web::Query::<HashMap<String, String>>::extract(&req)
-            .and_then(|extr_query: Query<HashMap<String, String>>| futures::future::ready(Ok(extr_query.0)))
+            .and_then(|extracted_query: Query<HashMap<String, String>>| futures::future::ready(Ok(extracted_query.0)))
             .await
             .map_err(|e| Report::msg(format!("{:?}", e)));
 

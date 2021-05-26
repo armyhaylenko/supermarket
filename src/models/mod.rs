@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::types::PgMoney;
 use validator::{Validate, ValidationError};
 
 fn cashier_or_manager(role: &String) -> Result<(), ValidationError> {
@@ -81,7 +81,7 @@ pub struct ShopEmployee {
     #[validate(custom = "cashier_or_manager")]
     #[sqlx(rename = "position")] // position in supermarket db, user_role in code - it's cashier or manager anyway
     pub user_role: String,
-    pub salary: i64,
+    pub salary: Decimal,
     pub join_date: NaiveDateTime,
     #[validate(length(equal = 13))]
     pub phone_num: String,
@@ -106,7 +106,7 @@ pub struct OwnedProduct {
     #[validate(length(equal = 12))]
     pub product_upc: String,
     pub product_id: usize,
-    pub sale_price: i64,
+    pub sale_price: Decimal,
     pub units_in_stock: usize,
     pub is_on_sale: bool,
     pub on_sale_product_upc: Option<String>,
@@ -117,6 +117,26 @@ pub struct Category {
     pub category_id: Option<i32>,
     #[validate(length(max = 200))]
     pub category_name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Validate, sqlx::FromRow)]
+pub struct ClientCard {
+    pub card_id: Option<i32>,
+    #[validate(length(max = 50))]
+    pub first_name: String,
+    #[validate(length(max = 100))]
+    pub last_name: String,
+    #[validate(length(max = 50))]
+    pub patronymic: String,
+    #[validate(length(equal = 13))]
+    pub phone_num: String,
+    #[validate(length(max = 200))]
+    pub addr_city: String,
+    #[validate(length(max = 200))]
+    pub addr_street: String,
+    #[validate(length(equal = 5))]
+    pub addr_postal: String,
+    pub discount_rate: Decimal,
 }
 
 // pub struct Waybill {

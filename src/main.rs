@@ -8,23 +8,27 @@ use tracing::info;
 pub async fn main() -> std::io::Result<()> {
     info!("Loading connection configuration...");
     let connection_config = config::ConnectionConfig::from_env().expect("Could not load environment config");
-    let connection_pool = Arc::new(
-        config::ConnectionConfig::create_db_pool(&connection_config)
+    let auth_service_connection_pool = Arc::new(
+        config::ConnectionConfig::create_db_pool(&connection_config, std::env::var("POSTGRES_AUTH_SERVICE_DB").unwrap().as_str())
+            .await
+            .expect("Could not create a database connection pool"),
+    );
+    let supermarket_connection_pool = Arc::new(
+        config::ConnectionConfig::create_db_pool(&connection_config, std::env::var("POSTGRES_SUPERMARKET_DB").unwrap().as_str())
             .await
             .expect("Could not create a database connection pool"),
     );
     let secret_key = std::env::var("CRYPTO_SERVICE_SECRET_KEY").expect("Secret key env var not found");
     let crypto_service = Arc::new(config::crypto::CryptoService::new(secret_key));
 
-    let user_repository = Arc::new(UserRepository::new(connection_pool.clone()));
-    let shop_repository = Arc::new(SupermarketRepository::new(connection_pool.clone()));
+    let user_repository = Arc::new(UserRepository::new(auth_service_connection_pool.clone()));
+    let shop_repository = Arc::new(SupermarketRepository::new(supermarket_connection_pool.clone()));
 
     info!("Starting server at http://{}:{}", connection_config.host, connection_config.port);
 
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .data(connection_pool.clone())
             .data(crypto_service.clone())
             .data(user_repository.clone())
             .data(shop_repository.clone())

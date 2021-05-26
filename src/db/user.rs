@@ -30,10 +30,13 @@ impl UserRepository {
         Ok(user_in_db)
     }
 
-    pub async fn get_user_by_username(&self, username: String) -> Result<Option<User>> {
+    pub async fn get_user_by_username(&self, username: &str) -> Result<Option<User>> {
         let get_user_sql = fs::read_to_string("sql/get_user.sql")?;
 
-        let maybe_user: Option<User> = sqlx::query_as(&get_user_sql[..]).bind(username).fetch_optional(&*self.pool).await?;
+        let maybe_user: Option<User> = sqlx::query_as(get_user_sql.as_str())
+            .bind(&username)
+            .fetch_optional(&*self.pool)
+            .await?;
 
         Ok(maybe_user)
     }

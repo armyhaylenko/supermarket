@@ -1,0 +1,1 @@
+DELETE FROM "ShopEmployee" WHERE empl_id = $1

@@ -31,16 +31,16 @@ impl ConnectionConfig {
         c.try_into().context("Creating new config from environment...")
     }
 
-    pub async fn create_db_pool(&self) -> Result<PgPool> {
-        info!("Creating database connection pool...");
+    pub async fn create_db_pool(&self, target_db: &str) -> Result<PgPool> {
+        info!("Creating {} database connection pool...", &target_db);
 
         PgPool::connect_with(
             PgConnectOptions::new()
-                .host("localhost")
+                .host(self.host.as_str())
                 .port(5432)
-                .username(&*env::var("POSTGRES_USER")?)
-                .password(&*env::var("POSTGRES_PASSWORD")?)
-                .database(&*env::var("POSTGRES_DATABASE")?),
+                .username(env::var("POSTGRES_USER")?.as_str())
+                .password(env::var("POSTGRES_PASSWORD")?.as_str())
+                .database(target_db),
         )
         .await
         .context("Creating database connection pool...")

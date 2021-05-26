@@ -2,7 +2,7 @@ use crate::models::AuthenticatedUser;
 use actix_web::http::{header, header::ToStrError};
 use actix_web::HttpRequest;
 use color_eyre::{Report, Result};
-use jsonwebtoken::{decode, Algorithm, DecodingKey, TokenData, Validation};
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use tracing::debug;
 
 pub fn decode_token_to_user(token: &str, secret_key: &str) -> Result<AuthenticatedUser> {

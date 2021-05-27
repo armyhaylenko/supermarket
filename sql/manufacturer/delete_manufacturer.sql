@@ -1,0 +1,1 @@
+DELETE FROM "Manufacturer" WHERE manufacturer_id = $1

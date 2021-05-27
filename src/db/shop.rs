@@ -95,11 +95,177 @@ impl SupermarketRepository {
 
     pub async fn handle_client_card(&self, action: Action<ClientCard>) -> Result<Option<ClientCard>> {
         match action {
-            Action::Create(cc) => Ok(Some(cc)),
-            Action::Delete(cc) => Ok(Some(cc)), // TODO!
-            Action::Update(cc) => Ok(Some(cc)), // TODO!
+            Action::Create(cc) => {
+                let sql = include_str!("../../sql/client_card/create_client_card.sql");
+                cc.validate()?;
+                sqlx::query_as::<_, ClientCard>(sql)
+                    .bind(cc.first_name)
+                    .bind(cc.last_name)
+                    .bind(cc.patronymic)
+                    .bind(cc.phone_num)
+                    .bind(cc.addr_city)
+                    .bind(cc.addr_street)
+                    .bind(cc.addr_postal)
+                    .bind(PgMoney::from_decimal(cc.discount_rate, 2))
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Delete(cc) => {
+                let sql = include_str!("../../sql/client_card/delete_client_card.sql");
+                sqlx::query_as::<_, ClientCard>(sql)
+                    .bind(cc.card_id)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Update(cc) => {
+                let sql = include_str!("../../sql/client_card/update_client_card.sql");
+                cc.validate()?;
+                sqlx::query_as::<_, ClientCard>(sql)
+                    .bind(cc.card_id)
+                    .bind(cc.first_name)
+                    .bind(cc.last_name)
+                    .bind(cc.patronymic)
+                    .bind(cc.phone_num)
+                    .bind(cc.addr_city)
+                    .bind(cc.addr_street)
+                    .bind(cc.addr_postal)
+                    .bind(PgMoney::from_decimal(cc.discount_rate, 2))
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
         }
     }
+
+    pub async fn handle_manufacturer(&self, action: Action<Manufacturer>) -> Result<Option<Manufacturer>> {
+        match action {
+            Action::Create(m) => {
+                let sql = include_str!("../../sql/manufacturer/create_manufacturer.sql");
+                m.validate()?;
+                sqlx::query_as::<_, Manufacturer>(sql)
+                    .bind(m.contract_id)
+                    .bind(m.contract_sign_date)
+                    .bind(m.contract_end_date)
+                    .bind(m.manufacturer_name)
+                    .bind(m.country)
+                    .bind(m.addr_city)
+                    .bind(m.addr_street)
+                    .bind(m.addr_postal)
+                    .bind(m.tel_num)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Delete(m) => {
+                let sql = include_str!("../../sql/manufacturer/delete_manufacturer.sql");
+                sqlx::query_as::<_, Manufacturer>(sql)
+                    .bind(m.manufacturer_id)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Update(m) => {
+                let sql = include_str!("../../sql/manufacturer/update_manufacturer.sql");
+                m.validate()?;
+                sqlx::query_as::<_, Manufacturer>(sql)
+                    .bind(m.manufacturer_id)
+                    .bind(m.contract_id)
+                    .bind(m.contract_sign_date)
+                    .bind(m.contract_end_date)
+                    .bind(m.manufacturer_name)
+                    .bind(m.country)
+                    .bind(m.addr_city)
+                    .bind(m.addr_street)
+                    .bind(m.addr_postal)
+                    .bind(m.tel_num)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+        }
+    }
+
+    pub async fn handle_product(&self, action: Action<Product>) -> Result<Option<Product>> {
+        match action {
+            Action::Create(p) => {
+                let sql = include_str!("../../sql/product/create_product.sql");
+                p.validate()?;
+                sqlx::query_as::<_, Product>(sql)
+                    .bind(p.product_name)
+                    .bind(p.descr)
+                    .bind(p.category_id)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Delete(p) => {
+                let sql = include_str!("../../sql/product/delete_product.sql");
+                sqlx::query_as::<_, Product>(sql)
+                    .bind(p.product_id)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Update(p) => {
+                let sql = include_str!("../../sql/product/delete_product.sql");
+                p.validate()?;
+                sqlx::query_as::<_, Product>(sql)
+                    .bind(p.product_id)
+                    .bind(p.product_name)
+                    .bind(p.descr)
+                    .bind(p.category_id)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+        }
+    }
+
+    pub async fn handle_owned_product(&self, action: Action<OwnedProduct>) -> Result<Option<OwnedProduct>> {
+        async fn query(repo: &SupermarketRepository, sql: &str, p: OwnedProduct) -> Result<Option<OwnedProduct>> {
+            sqlx::query_as::<_, OwnedProduct>(sql)
+                .bind(p.product_upc)
+                .bind(p.product_id)
+                .bind(p.sale_price)
+                .bind(p.units_in_stock)
+                .bind(p.is_on_sale)
+                .bind(p.on_sale_product_upc)
+                .fetch_optional(&*repo.pool)
+                .await
+                .map_err(|err| Report::new(err))
+        }
+        match action {
+            Action::Create(p) => {
+                let sql = include_str!("../../sql/owned_product/create_owned_product.sql");
+                p.validate()?;
+                query(&self, sql, p).await
+            }
+            Action::Delete(p) => {
+                let sql = include_str!("../../sql/owned_product/delete_owned_product.sql");
+                sqlx::query_as::<_, OwnedProduct>(sql)
+                    .bind(p.product_upc)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Update(p) => {
+                let sql = include_str!("../../sql/owned_product/delete_owned_product.sql");
+                p.validate()?;
+                query(&self, sql, p).await
+            }
+        }
+    }
+
+    // TODO
+    // pub async fn handle_category(&self, action: Action<Category>) -> Result<Option<Category>> {
+    //     match action {
+    //         Action::Create(c) => {}
+    //         Action::Delete(c) => Ok(None),
+    //         Action::Update(c) => {}
+    //     }
+    // }
 
     pub async fn get_most_recent_employee(&self) -> Result<Option<i32>> {
         let sql = include_str!("../../sql/employee/tests/get_most_recent_employee.sql");

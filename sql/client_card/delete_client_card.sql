@@ -1,0 +1,1 @@
+DELETE FROM "ClientCard" WHERE card_id = $1

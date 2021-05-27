@@ -38,13 +38,6 @@ pub struct NewUser {
     pub user_role: String,
 }
 
-#[derive(Deserialize, Validate, Debug)]
-pub struct UpdateProfile {
-    pub full_name: Option<String>,
-    #[validate(url)]
-    pub image_link: Option<String>,
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthenticatedUser {
     pub username: String,
@@ -98,16 +91,16 @@ pub struct Product {
     pub product_name: String,
     #[validate(length(max = 500))]
     pub descr: String,
-    pub category_id: usize,
+    pub category_id: i32,
 }
 
 #[derive(Serialize, Deserialize, Debug, Validate, sqlx::FromRow)]
 pub struct OwnedProduct {
     #[validate(length(equal = 12))]
     pub product_upc: String,
-    pub product_id: usize,
+    pub product_id: i32,
     pub sale_price: Decimal,
-    pub units_in_stock: usize,
+    pub units_in_stock: i32,
     pub is_on_sale: bool,
     pub on_sale_product_upc: Option<String>,
 }

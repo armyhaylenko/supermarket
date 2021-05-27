@@ -2,7 +2,6 @@ use crate::config::crypto::CryptoService;
 use crate::models::{NewUser, User};
 use color_eyre::Result;
 use sqlx::PgPool;
-use std::fs;
 use std::sync::Arc;
 
 pub struct UserRepository {

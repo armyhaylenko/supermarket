@@ -2,8 +2,8 @@ mod test_endpoints;
 
 use crate::config::crypto::CryptoService;
 use crate::db::{Action, SupermarketRepository, UserRepository};
-use crate::models::{NewUser, ShopEmployee};
-use crate::utils::has_auth_level;
+use crate::models::*;
+use crate::utils::{handle_query_and_auth, has_auth_level};
 use actix_web::{
     get, post, web,
     web::{Form, ServiceConfig},
@@ -65,20 +65,90 @@ pub async fn get_user(req: HttpRequest, user_repo: web::Data<Arc<UserRepository>
 #[post("/employee")] // ?action={create, delete, update}
 pub async fn employee(req: HttpRequest, body: web::Json<ShopEmployee>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
     let emp = body.into_inner();
-    let action = Action::from_req(&req, emp);
-    if !has_auth_level(&req, "manager".to_owned()) {
-        HttpResponse::Unauthorized()
-            .body("The authorization header is not present or is malformed, or the user does not have access to this resource.")
-    } else {
-        match action.and_then(|act| shop_repo.handle_employee(act)).await {
-            Ok(ref maybe_employee) => match serde_json::to_string::<Option<ShopEmployee>>(maybe_employee) {
-                Ok(query_result) => HttpResponse::Ok().body(query_result),
-                Err(e) => HttpResponse::InternalServerError().body(format!("Unable to convert query result to json struct: {}", e)),
-            },
-            Err(e) => HttpResponse::InternalServerError().body(format!("The database was not able to process employee request: {}", e)),
-        }
-    }
+    let action_fut = Action::from_req(&req, emp);
+    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_employee(act)).await, "manager")
 }
+
+#[post("/client_card")]
+pub async fn client_card(
+    req: HttpRequest,
+    body: web::Json<ClientCard>,
+    shop_repo: web::Data<Arc<SupermarketRepository>>,
+) -> impl Responder {
+    let cc = body.into_inner();
+    let action_fut = Action::from_req(&req, cc);
+    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_client_card(act)).await, "manager")
+}
+
+#[post("/manufacturer")]
+pub async fn manufacturer(
+    req: HttpRequest,
+    body: web::Json<Manufacturer>,
+    shop_repo: web::Data<Arc<SupermarketRepository>>,
+) -> impl Responder {
+    let cc = body.into_inner();
+    let action_fut = Action::from_req(&req, cc);
+    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_manufacturer(act)).await, "manager")
+}
+
+#[post("/product")]
+pub async fn product(req: HttpRequest, body: web::Json<Product>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
+    let p = body.into_inner();
+    let action_fut = Action::from_req(&req, p);
+    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_product(act)).await, "manager")
+}
+
+#[post("/owned_product")]
+pub async fn owned_product(
+    req: HttpRequest,
+    body: web::Json<OwnedProduct>,
+    shop_repo: web::Data<Arc<SupermarketRepository>>,
+) -> impl Responder {
+    let op = body.into_inner();
+    let action_fut = Action::from_req(&req, op);
+    handle_query_and_auth(
+        &req,
+        action_fut.and_then(|act| shop_repo.handle_owned_product(act)).await,
+        "manager",
+    )
+}
+
+#[post("/category")]
+pub async fn category(req: HttpRequest, body: web::Json<Category>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
+    let c = body.into_inner();
+    let action_fut = Action::from_req(&req, c);
+    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_category(act)).await, "manager")
+}
+
+#[post("/waybill")]
+pub async fn waybill(req: HttpRequest, body: web::Json<Waybill>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
+    let w = body.into_inner();
+    let action_fut = Action::from_req(&req, w);
+    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_waybill(act)).await, "manager")
+}
+
+#[post("/return_agreement")]
+pub async fn return_agreement(
+    req: HttpRequest,
+    body: web::Json<ReturnAgreement>,
+    shop_repo: web::Data<Arc<SupermarketRepository>>,
+) -> impl Responder {
+    let ra = body.into_inner();
+    let action_fut = Action::from_req(&req, ra);
+    handle_query_and_auth(
+        &req,
+        action_fut.and_then(|act| shop_repo.handle_return_agreement(act)).await,
+        "manager",
+    )
+}
+
+// #[post("/receipt")] // TODO: this requires a non-generic handler due to method complexity, separate endpoints like create_receipt or
+// // route based on action param
+// pub async fn receipt(req: HttpRequest, body: web::Json<CreateReceipt>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
+//     let p = body.into_inner();
+//     let action_fut = Action::from_req(&req, p);
+//     handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_product(act)).await, "manager")
+// }
 
 pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
     let tests_scope = web::scope("/tests").service(test_endpoints::get_most_recent_employee);

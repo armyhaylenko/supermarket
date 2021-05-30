@@ -312,6 +312,10 @@ impl SupermarketRepository {
         }
     }
 
+    pub async fn handle_return_agreement(&self, action: Action<ReturnAgreement>) -> Result<Option<ReturnAgreement>> {
+        todo!()
+    }
+
     pub async fn handle_create_receipt(&self, create_receipt: CreateReceipt) -> Result<Option<Receipt>> {
         let receipt_sum = create_receipt.sales.iter().fold(Decimal::new(0, 2), |prev_sum, sale| {
             prev_sum + (sale.price * Decimal::new(sale.qty as i64, 0))

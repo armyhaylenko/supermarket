@@ -1,8 +1,9 @@
 use crate::models::AuthenticatedUser;
 use actix_web::http::{header, header::ToStrError};
-use actix_web::HttpRequest;
+use actix_web::{HttpRequest, HttpResponse};
 use color_eyre::{Report, Result};
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
+use serde::{Deserialize, Serialize};
 use tracing::debug;
 
 pub fn decode_token_to_user(token: &str, secret_key: &str) -> Result<AuthenticatedUser> {
@@ -35,4 +36,27 @@ pub fn has_auth_level(req: &HttpRequest, auth_level: String) -> bool {
     let auth = handle_auth(&req);
 
     auth.contains(&auth_level)
+}
+
+fn query_result_to_http_response<'a, T: Serialize + Deserialize<'a>>(r: Result<Option<T>>) -> HttpResponse {
+    match r {
+        Ok(ref maybe_object) => match serde_json::to_string(maybe_object) {
+            Ok(query_res) => HttpResponse::Ok().body(query_res),
+            Err(e) => HttpResponse::InternalServerError().body(format!("Unable to convert query result to json struct: {}", e)),
+        },
+        Err(e) => HttpResponse::InternalServerError().body(format!("The database was not able to process request: {}", e)),
+    }
+}
+
+pub fn handle_query_and_auth<'a, T: Serialize + Deserialize<'a>>(
+    req: &HttpRequest,
+    query_result: Result<Option<T>>,
+    auth_level: &str,
+) -> HttpResponse {
+    if !has_auth_level(&req, auth_level.to_owned()) {
+        HttpResponse::Unauthorized()
+            .body("The authorization header is not present or is malformed, or the user does not have access to this resource.")
+    } else {
+        query_result_to_http_response(query_result)
+    }
 }

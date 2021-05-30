@@ -1,0 +1,1 @@
+INSERT INTO "Sale" (receipt_id, product_upc, qty, price) VALUES ($1, $2, $3, $4)

@@ -1,0 +1,1 @@
+INSERT INTO "Category" (category_name) VALUES ($1) RETURNING *;

@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDate, NaiveDateTime};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
@@ -49,8 +49,8 @@ pub struct Manufacturer {
     pub manufacturer_id: Option<i32>,
     #[validate(length(equal = 32))]
     pub contract_id: String,
-    pub contract_sign_date: NaiveDateTime,
-    pub contract_end_date: NaiveDateTime,
+    pub contract_sign_date: NaiveDate,
+    pub contract_end_date: NaiveDate,
     #[validate(length(max = 200))]
     pub manufacturer_name: String,
     pub country: String,
@@ -75,7 +75,7 @@ pub struct ShopEmployee {
     #[sqlx(rename = "position")] // position in supermarket db, user_role in code - it's cashier or manager anyway
     pub user_role: String,
     pub salary: Decimal,
-    pub join_date: NaiveDateTime,
+    pub join_date: NaiveDate,
     #[validate(length(equal = 13))]
     pub phone_num: String,
     pub addr_city: String,
@@ -135,7 +135,7 @@ pub struct ClientCard {
 #[derive(Serialize, Debug, Deserialize, Validate, sqlx::FromRow)]
 pub struct Waybill {
     pub waybill_id: Option<i32>,
-    pub waybill_date: NaiveDateTime,
+    pub waybill_date: NaiveDate,
     pub base_price: Decimal,
     pub waybill_sum: Decimal,
     pub qty: i32,
@@ -148,7 +148,7 @@ pub struct Waybill {
 #[derive(Serialize, Debug, Deserialize, Validate, sqlx::FromRow)]
 pub struct ReturnAgreement {
     pub return_agreement_id: Option<i32>,
-    pub sign_date: NaiveDateTime,
+    pub sign_date: NaiveDate,
     pub qty: i32,
     pub return_agreement_sum: Decimal,
     #[validate(length(equal = 12))]
@@ -157,12 +157,27 @@ pub struct ReturnAgreement {
     pub empl_id: i32,
 }
 
-#[derive(Serialize, Debug, Deserialize, Validate, sqlx::FromRow)]
-pub struct Recepit {
+#[derive(Serialize, Debug, Deserialize, sqlx::FromRow)]
+pub struct Receipt {
     pub receipt_id: Option<i32>,
-    pub receipt_date: NaiveDateTime,
+    pub receipt_date: NaiveDate,
     pub receipt_sum: Decimal,
     #[sqlx(rename = "VAT")]
     pub vat: Decimal,
     pub client_card_id: Option<i32>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Validate)]
+pub struct CreateSale {
+    #[validate(length(equal = 12))]
+    pub product_upc: String,
+    pub qty: i32,
+    pub price: Decimal,
+}
+
+#[derive(Serialize, Debug, Deserialize)]
+pub struct CreateReceipt {
+    pub receipt_date: NaiveDate,
+    pub client_card_id: Option<i32>,
+    pub sales: Vec<CreateSale>,
 }

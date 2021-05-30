@@ -35,7 +35,7 @@ fn test_employee_creation_and_deletion() {
     let create_cmd: CString = CString::new(r#"curl -XPOST -H\
      'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIiwidXNlcl9yb2xlIjoibWFuYWdlciIsImV4cCI6MTcxNjE0Mzc3NH0.MJ430Tzz4GUyUQv3i3q_-dn92CsMSFvbqkE2_JYZ74k'\
      -H 'Content-Type: application/json'\
-     http://localhost:3000/api/employee?action=create --data-binary '{"empl_id":null,"first_name":"Mykola","last_name":"Drabyna","patronymic":"Ivanovych","user_role":"cashier","salary":"0","join_date":"2021-05-25T08:13:03","phone_num":"+380976136133","addr_city":"Kyiv","addr_street":"Polyarna, 13","addr_postal":"05046"}'"#)
+     http://localhost:3000/api/employee?action=create --data '{"empl_id":null,"first_name":"Mykola","last_name":"Drabyna","patronymic":"Ivanovych","user_role":"cashier","salary":"4500.00","join_date":"2021-05-25","phone_num":"+380976136133","addr_city":"Kyiv","addr_street":"Polyarna, 13","addr_postal":"05046"}'"#)
         .unwrap();
     let get_most_recent_employee_cmd: CString =
         CString::new(r#"curl http://localhost:3000/api/tests/get_most_recent_employee > ./tests/empl_id"#).unwrap();

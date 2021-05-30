@@ -1,9 +1,9 @@
 use crate::models::*;
 use actix_web::{web, web::Query, FromRequest, HttpRequest};
 use color_eyre::{Report, Result};
-use futures::TryFutureExt;
+use futures::{StreamExt, TryFutureExt};
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::types::PgMoney;
 use sqlx::PgPool;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -53,7 +53,7 @@ impl SupermarketRepository {
                     .bind(e.last_name)
                     .bind(e.patronymic)
                     .bind(e.user_role)
-                    .bind(PgMoney::from_decimal(e.salary, 2))
+                    .bind(e.salary)
                     .bind(e.join_date)
                     .bind(e.phone_num)
                     .bind(e.addr_city)
@@ -80,7 +80,7 @@ impl SupermarketRepository {
                     .bind(e.last_name)
                     .bind(e.patronymic)
                     .bind(e.user_role)
-                    .bind(PgMoney::from_decimal(e.salary, 2))
+                    .bind(e.salary)
                     .bind(e.join_date)
                     .bind(e.phone_num)
                     .bind(e.addr_city)
@@ -106,7 +106,7 @@ impl SupermarketRepository {
                     .bind(cc.addr_city)
                     .bind(cc.addr_street)
                     .bind(cc.addr_postal)
-                    .bind(PgMoney::from_decimal(cc.discount_rate, 2))
+                    .bind(cc.discount_rate)
                     .fetch_optional(&*self.pool)
                     .await
                     .map_err(|err| Report::new(err))
@@ -131,7 +131,7 @@ impl SupermarketRepository {
                     .bind(cc.addr_city)
                     .bind(cc.addr_street)
                     .bind(cc.addr_postal)
-                    .bind(PgMoney::from_decimal(cc.discount_rate, 2))
+                    .bind(cc.discount_rate)
                     .fetch_optional(&*self.pool)
                     .await
                     .map_err(|err| Report::new(err))
@@ -258,14 +258,99 @@ impl SupermarketRepository {
         }
     }
 
-    // TODO
-    // pub async fn handle_category(&self, action: Action<Category>) -> Result<Option<Category>> {
-    //     match action {
-    //         Action::Create(c) => {}
-    //         Action::Delete(c) => Ok(None),
-    //         Action::Update(c) => {}
-    //     }
-    // }
+    pub async fn handle_category(&self, action: Action<Category>) -> Result<Option<Category>> {
+        match action {
+            Action::Create(c) => {
+                let sql = include_str!("../../sql/category/create_category.sql");
+                c.validate()?;
+                sqlx::query_as(sql)
+                    .bind(c.category_name)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Delete(_) => Ok(None),
+            Action::Update(c) => {
+                let sql = include_str!("../../sql/category/update_category.sql");
+                c.validate()?;
+                sqlx::query_as(sql)
+                    .bind(c.category_id)
+                    .bind(c.category_name)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+        }
+    }
+
+    pub async fn handle_waybill(&self, action: Action<Waybill>) -> Result<Option<Waybill>> {
+        match action {
+            Action::Create(w) => {
+                let sql = include_str!("../../sql/waybill/create_waybill.sql");
+                w.validate()?;
+                sqlx::query_as(sql)
+                    .bind(w.waybill_date)
+                    .bind(w.base_price)
+                    .bind(w.waybill_sum)
+                    .bind(w.qty)
+                    .bind(w.product_upc)
+                    .bind(w.manufacturer_id)
+                    .bind(w.empl_id)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Delete(w) => {
+                let sql = include_str!("../../sql/waybill/delete_waybill.sql");
+                sqlx::query_as(sql)
+                    .bind(w.waybill_id)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Update(_) => Ok(None),
+        }
+    }
+
+    pub async fn handle_create_receipt(&self, create_receipt: CreateReceipt) -> Result<Option<Receipt>> {
+        let receipt_sum = create_receipt.sales.iter().fold(Decimal::new(0, 2), |prev_sum, sale| {
+            prev_sum + (sale.price * Decimal::new(sale.qty as i64, 0))
+        });
+        let receipt_date = create_receipt.receipt_date;
+        let vat = receipt_sum * Decimal::new(20, 2) / Decimal::new(120, 2);
+        let receipt = Receipt {
+            receipt_id: None,
+            receipt_date,
+            receipt_sum,
+            vat,
+            client_card_id: create_receipt.client_card_id,
+        };
+        let sql = include_str!("../../sql/receipt/create_receipt.sql");
+        let receipt: Receipt = sqlx::query_as::<_, Receipt>(sql)
+            .bind(receipt.receipt_date)
+            .bind(receipt.receipt_sum)
+            .bind(receipt.vat)
+            .bind(receipt.client_card_id)
+            .fetch_one(&*self.pool)
+            .await
+            .map_err(|err| Report::new(err))
+            .unwrap();
+
+        let id = receipt.receipt_id.unwrap();
+        let sale_task_queue = futures::stream::futures_unordered::FuturesUnordered::new();
+        for sale in create_receipt.sales.into_iter() {
+            let query_fut = sqlx::query(include_str!("../../sql/sale/create_sale.sql"))
+                .bind(id)
+                .bind(sale.product_upc)
+                .bind(sale.qty)
+                .bind(sale.price)
+                .fetch_optional(&*self.pool);
+            sale_task_queue.push(query_fut);
+        }
+        let _results = sale_task_queue.collect::<Vec<_>>().await;
+
+        Ok(Some(receipt))
+    }
 
     pub async fn get_most_recent_employee(&self) -> Result<Option<i32>> {
         let sql = include_str!("../../sql/employee/tests/get_most_recent_employee.sql");
@@ -279,5 +364,6 @@ impl SupermarketRepository {
 
 #[derive(Serialize, Debug, Deserialize, sqlx::FromRow)]
 struct I32Result {
+    // this exists only because sqlx needs a type that implements FromRow to deserialize the db output
     max_empl_id: i32,
 }

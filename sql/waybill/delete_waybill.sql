@@ -1,0 +1,1 @@
+DELETE FROM "Waybill" WHERE waybill_id = $1

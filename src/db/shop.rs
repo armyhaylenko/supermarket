@@ -313,7 +313,31 @@ impl SupermarketRepository {
     }
 
     pub async fn handle_return_agreement(&self, action: Action<ReturnAgreement>) -> Result<Option<ReturnAgreement>> {
-        todo!()
+        match action {
+            Action::Create(ra) => {
+                let sql = include_str!("../../sql/return_agreement/create_return_agreement.sql");
+                ra.validate()?;
+                sqlx::query_as(sql)
+                    .bind(ra.sign_date)
+                    .bind(ra.qty)
+                    .bind(ra.return_agreement_sum)
+                    .bind(ra.product_upc)
+                    .bind(ra.manufacturer_id)
+                    .bind(ra.empl_id)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Delete(ra) => {
+                let sql = include_str!("../../sql/return_agreement/delete_return_agreement.sql");
+                sqlx::query_as(sql)
+                    .bind(ra.sign_date)
+                    .fetch_optional(&*self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+            }
+            Action::Update(_) => Ok(None),
+        }
     }
 
     pub async fn handle_create_receipt(&self, create_receipt: CreateReceipt) -> Result<Option<Receipt>> {
@@ -337,23 +361,40 @@ impl SupermarketRepository {
             .bind(receipt.client_card_id)
             .fetch_one(&*self.pool)
             .await
-            .map_err(|err| Report::new(err))
-            .unwrap();
+            .map_err(|err| Report::new(err))?;
 
-        let id = receipt.receipt_id.unwrap();
         let sale_task_queue = futures::stream::futures_unordered::FuturesUnordered::new();
         for sale in create_receipt.sales.into_iter() {
             let query_fut = sqlx::query(include_str!("../../sql/sale/create_sale.sql"))
-                .bind(id)
+                .bind(receipt.receipt_id)
                 .bind(sale.product_upc)
                 .bind(sale.qty)
                 .bind(sale.price)
                 .fetch_optional(&*self.pool);
             sale_task_queue.push(query_fut);
         }
-        let _results = sale_task_queue.collect::<Vec<_>>().await;
+        let _ = sale_task_queue.collect::<Vec<_>>().await;
 
         Ok(Some(receipt))
+    }
+
+    pub async fn handle_delete_receipt(&self, receipt: Receipt) -> Result<Option<Receipt>> {
+        sqlx::query_as(include_str!("../../sql/receipt/delete_receipt.sql"))
+            .bind(receipt.receipt_id)
+            .fetch_optional(&*self.pool)
+            .await
+            .map_err(|err| Report::new(err))
+    }
+
+    pub async fn handle_update_sale(&self, sale: Sale) -> Result<Option<Sale>> {
+        sqlx::query_as(include_str!("../../sql/sale/update_sale.sql"))
+            .bind(sale.receipt_id)
+            .bind(sale.product_upc)
+            .bind(sale.price)
+            .bind(sale.qty)
+            .fetch_optional(&*self.pool)
+            .await
+            .map_err(|err| Report::new(err))
     }
 
     pub async fn get_most_recent_employee(&self) -> Result<Option<i32>> {

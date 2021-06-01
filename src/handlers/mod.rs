@@ -142,17 +142,44 @@ pub async fn return_agreement(
     )
 }
 
-// #[post("/receipt")] // TODO: this requires a non-generic handler due to method complexity, separate endpoints like create_receipt or
-// // route based on action param
-// pub async fn receipt(req: HttpRequest, body: web::Json<CreateReceipt>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
-//     let p = body.into_inner();
-//     let action_fut = Action::from_req(&req, p);
-//     handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_product(act)).await, "manager")
-// }
+#[post("/create_receipt")]
+pub async fn create_receipt(
+    req: HttpRequest,
+    body: web::Json<CreateReceipt>,
+    shop_repo: web::Data<Arc<SupermarketRepository>>,
+) -> impl Responder {
+    handle_query_and_auth(&req, shop_repo.handle_create_receipt(body.into_inner()).await, "manager")
+}
+
+#[post("/delete_receipt")]
+pub async fn delete_receipt(
+    req: HttpRequest,
+    body: web::Json<Receipt>,
+    shop_repo: web::Data<Arc<SupermarketRepository>>,
+) -> impl Responder {
+    handle_query_and_auth(&req, shop_repo.handle_delete_receipt(body.into_inner()).await, "manager")
+}
+
+#[post("/update_sale")]
+pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
+    handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "cashier")
+}
 
 pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
     let tests_scope = web::scope("/tests").service(test_endpoints::get_most_recent_employee);
-    let api_scope = web::scope("/api").service(tests_scope).service(employee);
+    let api_scope = web::scope("/api")
+        .service(tests_scope)
+        .service(employee)
+        .service(client_card)
+        .service(manufacturer)
+        .service(product)
+        .service(owned_product)
+        .service(category)
+        .service(waybill)
+        .service(return_agreement)
+        .service(create_receipt)
+        .service(delete_receipt)
+        .service(update_sale);
     let admin_scope = web::scope("/admin").service(create_new_user).service(get_user);
     server_cfg.service(healthcheck).service(api_scope).service(admin_scope);
 }

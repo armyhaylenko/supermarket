@@ -167,6 +167,15 @@ pub struct Receipt {
     pub client_card_id: Option<i32>,
 }
 
+#[derive(Serialize, Debug, Deserialize, Validate, sqlx::FromRow)]
+pub struct Sale {
+    pub receipt_id: Option<i32>,
+    #[validate(length(equal = 12))]
+    pub product_upc: String,
+    pub qty: i32,
+    pub price: Decimal,
+}
+
 #[derive(Serialize, Deserialize, Debug, Validate)]
 pub struct CreateSale {
     #[validate(length(equal = 12))]

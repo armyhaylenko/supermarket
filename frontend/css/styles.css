@@ -1,0 +1,45 @@
+body {
+    background-color: #bd9354;
+    color: aliceblue;
+}
+
+.bg-c1 {
+    background-color: #85603f;
+    color: aliceblue;
+}
+
+.bg-c2 {
+    background-color: #9e7540;
+    color: aliceblue;
+}
+
+.bg-c3 {
+    background-color: #bd9354;
+    color: aliceblue;
+}
+
+.bg-c4 {
+    background-color: #e3d18a;
+    color: aliceblue;
+}
+
+.bg-c5 {
+    background-color: #D9C163;
+    color: aliceblue;
+}
+
+.bg-old-logo {
+    background-color: #be8a62;
+    color: aliceblue;
+}
+
+.loginB {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.3rem;
+}
+
+.hovered {
+    background-color: #9e7540;
+    color: aliceblue;
+}

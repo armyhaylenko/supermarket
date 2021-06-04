@@ -1,8 +1,8 @@
-use crate::models::AuthenticatedUser;
+use crate::models::auth::AuthenticatedUser;
 use actix_web::http::{header, header::ToStrError};
 use actix_web::{HttpRequest, HttpResponse};
 use color_eyre::{Report, Result};
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
+use jsonwebtoken::{decode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use tracing::debug;
 
@@ -17,6 +17,10 @@ pub fn decode_token_to_user(token: &str, secret_key: &str) -> Result<Authenticat
         .map(|t_data| t_data.claims)
         .map_err(|e| Report::new(e));
     decoded_token
+}
+
+pub fn encode_user_to_token(user: &AuthenticatedUser, secret_key: &str) -> Result<String> {
+    jsonwebtoken::encode(&Header::default(), &user, &EncodingKey::from_base64_secret(secret_key)?).map_err(Report::new)
 }
 
 pub fn handle_auth(req: &HttpRequest) -> Result<String> {

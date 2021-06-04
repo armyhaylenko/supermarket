@@ -2,8 +2,8 @@ mod test_endpoints;
 
 use crate::config::crypto::CryptoService;
 use crate::db::{Action, SupermarketRepository, UserRepository};
-use crate::models::*;
-use crate::utils::{handle_query_and_auth, has_auth_level};
+use crate::models::{auth::*, *};
+use crate::utils;
 use actix_web::{
     get, post, web,
     web::{Form, ServiceConfig},
@@ -24,7 +24,7 @@ pub async fn create_new_user(
     user_repo: web::Data<Arc<UserRepository>>,
     crypto_svc: web::Data<Arc<CryptoService>>,
 ) -> impl Responder {
-    if !has_auth_level(&req, "manager".to_owned()) {
+    if !utils::has_auth_level(&req, "manager".to_owned()) {
         HttpResponse::Unauthorized()
             .body("The authorization header is not present or is malformed, or the user does not have access to this resource.")
     } else {
@@ -35,7 +35,7 @@ pub async fn create_new_user(
                 Ok(usr) => HttpResponse::Ok().body(format!("User {} was successfully added", usr.username)),
                 Err(e) => HttpResponse::UnprocessableEntity().body(format!("{}", e)),
             },
-            Err(e) => HttpResponse::UnprocessableEntity().body(format!("{}", e)),
+            Err(e) => HttpResponse::UnprocessableEntity().body(format!("Invalid user data: {}", e)),
         }
     }
 }
@@ -44,7 +44,7 @@ pub async fn create_new_user(
 pub async fn get_user(req: HttpRequest, user_repo: web::Data<Arc<UserRepository>>) -> impl Responder {
     let username = req.match_info().get("username").unwrap();
 
-    if !has_auth_level(&req, "manager".to_owned()) {
+    if !utils::has_auth_level(&req, "manager".to_owned()) {
         HttpResponse::Unauthorized()
             .body("The authorization header is not present or is malformed, or the user does not have access to this resource.")
     } else {
@@ -62,11 +62,27 @@ pub async fn get_user(req: HttpRequest, user_repo: web::Data<Arc<UserRepository>
     }
 }
 
+#[post("/login")]
+pub async fn login(
+    usr: Form<LoginUser>,
+    user_repo: web::Data<Arc<UserRepository>>,
+    crypto_service: web::Data<Arc<CryptoService>>,
+) -> impl Responder {
+    let body = usr.into_inner();
+    match user_repo.login(&body, &**crypto_service).await {
+        Ok(usr) => match utils::encode_user_to_token(&usr, std::env::var("JWT_DECODING_KEY").unwrap().as_str()) {
+            Ok(encoded_token) => HttpResponse::Ok().body(encoded_token),
+            Err(e) => HttpResponse::InternalServerError().body(format!("Error creating jwt: {}", e)),
+        },
+        Err(e) => HttpResponse::UnprocessableEntity().body(format!("{}", e)),
+    }
+}
+
 #[post("/employee")] // ?action={create, delete, update}
 pub async fn employee(req: HttpRequest, body: web::Json<ShopEmployee>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
     let emp = body.into_inner();
     let action_fut = Action::from_req(&req, emp);
-    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_employee(act)).await, "manager")
+    utils::handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_employee(act)).await, "manager")
 }
 
 #[post("/client_card")]
@@ -77,7 +93,7 @@ pub async fn client_card(
 ) -> impl Responder {
     let cc = body.into_inner();
     let action_fut = Action::from_req(&req, cc);
-    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_client_card(act)).await, "manager")
+    utils::handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_client_card(act)).await, "manager")
 }
 
 #[post("/manufacturer")]
@@ -88,14 +104,14 @@ pub async fn manufacturer(
 ) -> impl Responder {
     let cc = body.into_inner();
     let action_fut = Action::from_req(&req, cc);
-    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_manufacturer(act)).await, "manager")
+    utils::handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_manufacturer(act)).await, "manager")
 }
 
 #[post("/product")]
 pub async fn product(req: HttpRequest, body: web::Json<Product>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
     let p = body.into_inner();
     let action_fut = Action::from_req(&req, p);
-    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_product(act)).await, "manager")
+    utils::handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_product(act)).await, "manager")
 }
 
 #[post("/owned_product")]
@@ -106,7 +122,7 @@ pub async fn owned_product(
 ) -> impl Responder {
     let op = body.into_inner();
     let action_fut = Action::from_req(&req, op);
-    handle_query_and_auth(
+    utils::handle_query_and_auth(
         &req,
         action_fut.and_then(|act| shop_repo.handle_owned_product(act)).await,
         "manager",
@@ -117,14 +133,14 @@ pub async fn owned_product(
 pub async fn category(req: HttpRequest, body: web::Json<Category>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
     let c = body.into_inner();
     let action_fut = Action::from_req(&req, c);
-    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_category(act)).await, "manager")
+    utils::handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_category(act)).await, "manager")
 }
 
 #[post("/waybill")]
 pub async fn waybill(req: HttpRequest, body: web::Json<Waybill>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
     let w = body.into_inner();
     let action_fut = Action::from_req(&req, w);
-    handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_waybill(act)).await, "manager")
+    utils::handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.handle_waybill(act)).await, "manager")
 }
 
 #[post("/return_agreement")]
@@ -135,7 +151,7 @@ pub async fn return_agreement(
 ) -> impl Responder {
     let ra = body.into_inner();
     let action_fut = Action::from_req(&req, ra);
-    handle_query_and_auth(
+    utils::handle_query_and_auth(
         &req,
         action_fut.and_then(|act| shop_repo.handle_return_agreement(act)).await,
         "manager",
@@ -148,7 +164,7 @@ pub async fn create_receipt(
     body: web::Json<CreateReceipt>,
     shop_repo: web::Data<Arc<SupermarketRepository>>,
 ) -> impl Responder {
-    handle_query_and_auth(&req, shop_repo.handle_create_receipt(body.into_inner()).await, "manager")
+    utils::handle_query_and_auth(&req, shop_repo.handle_create_receipt(body.into_inner()).await, "manager")
 }
 
 #[post("/delete_receipt")]
@@ -157,12 +173,12 @@ pub async fn delete_receipt(
     body: web::Json<Receipt>,
     shop_repo: web::Data<Arc<SupermarketRepository>>,
 ) -> impl Responder {
-    handle_query_and_auth(&req, shop_repo.handle_delete_receipt(body.into_inner()).await, "manager")
+    utils::handle_query_and_auth(&req, shop_repo.handle_delete_receipt(body.into_inner()).await, "manager")
 }
 
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
-    handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "cashier")
+    utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "cashier")
 }
 
 pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
@@ -181,5 +197,9 @@ pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
         .service(delete_receipt)
         .service(update_sale);
     let admin_scope = web::scope("/admin").service(create_new_user).service(get_user);
-    server_cfg.service(healthcheck).service(api_scope).service(admin_scope);
+    server_cfg
+        .service(healthcheck)
+        .service(api_scope)
+        .service(admin_scope)
+        .service(login);
 }

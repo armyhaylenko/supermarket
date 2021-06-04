@@ -1,6 +1,7 @@
-use argonautica::Hasher;
-use color_eyre::Result;
-use futures::compat::Future01CompatExt;
+use crate::models::auth::HashAndSalt;
+use argon2::{Config, ThreadMode};
+use color_eyre::{Report, Result};
+use rand::{distributions::Alphanumeric, Rng};
 use std::sync::Arc;
 use tracing::instrument;
 
@@ -15,13 +16,17 @@ impl CryptoService {
     }
 
     #[instrument(skip(self, password))]
-    pub async fn hash_password(&self, password: &str) -> Result<String> {
-        Hasher::default()
-            .with_secret_key(&*self.key)
-            .with_password(password)
-            .hash_non_blocking()
-            .compat()
-            .await
-            .map_err(|e| eyre::Report::msg(format!("Hashing error: {:?}", e)))
+    pub fn hash_password(&self, password: &str, maybe_salt: Option<String>) -> Result<HashAndSalt> {
+        let mut cfg = Config::default();
+        cfg.secret = self.key.as_bytes();
+        cfg.thread_mode = ThreadMode::Parallel;
+
+        let salt: String = maybe_salt.unwrap_or(rand::thread_rng().sample_iter(&Alphanumeric).take(32).map(char::from).collect());
+
+        let maybe_hash = argon2::hash_encoded(password.as_bytes(), salt.as_bytes(), &cfg);
+
+        maybe_hash
+            .map(|password_hash| HashAndSalt { password_hash, salt })
+            .map_err(|e| Report::new(e))
     }
 }

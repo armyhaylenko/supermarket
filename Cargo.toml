@@ -26,7 +26,8 @@ chrono = { version = "0.4", features = ["serde"] }
 validator = "0.13"
 validator_derive = "0.13"
 jsonwebtoken = "7"
-argonautica = { version = "0.2", features = ["simd"] }
+rust-argon2 = "0.8.3"
+rand = "0.8.3"
 futures = { version = "0.3", features = ["compat"] }
 
 [dev-dependencies]

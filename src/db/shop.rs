@@ -397,6 +397,18 @@ impl SupermarketRepository {
             .map_err(|err| Report::new(err))
     }
 
+    // pub async fn handle_manager_query<'a, T: Serialize + Deserialize<'a>>(
+    //     &self,
+    //     query_name: &str,
+    //     json: serde_json::Value,
+    // ) -> Result<Option<T>> {
+    //     let sql = match query_name {
+    //         "get_all_cashiers" => include_str!("../../sql/manager_queries/get_all_cashiers.sql"),
+    //         _ => "",
+    //     };
+    //     todo!()
+    // }
+
     pub async fn get_most_recent_employee(&self) -> Result<Option<i32>> {
         let sql = include_str!("../../sql/employee/tests/get_most_recent_employee.sql");
         sqlx::query_as::<_, I32Result>(sql)

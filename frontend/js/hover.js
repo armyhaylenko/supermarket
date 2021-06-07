@@ -9,6 +9,16 @@ $(function() {
 		$("#login").addClass("bg-c3");
 		$("#login").removeClass("text-white-50");
         });
+	$("#back").hover(function() {
+		$("#back").removeClass("bg-c3");
+            $("#back").addClass("hovered");
+		$("#back").addClass("text-white-50");
+        },
+        function() {
+            $("#back").removeClass("hovered");
+		$("#back").addClass("bg-c3");
+		$("#back").removeClass("text-white-50");
+        });
 	$("#registr").hover(function() {
 		$("#registr").removeClass("bg-c3");
             $("#registr").addClass("hovered");

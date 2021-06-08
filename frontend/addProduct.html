@@ -20,43 +20,37 @@
                     </div>
                 </div>
                 <div class="col-lg-6 bg-c5 rounded-3">
-                    <form class="card2 card border-0 px-4 py-5 bg-c5 rounded-3" id="form">
+                    <form class="card2 card border-0 px-4 py-5 bg-c5 rounded-3" id="form" method="POST">
                         <div class="row mb-4 px-3 text-center">
-                            <h1 class="mb-0 mr-4 mt-2 bg-c3 rounded">Registration</h1>
+                            <h1 class="mb-0 mr-4 mt-2 bg-c3 rounded">Add product</h1>
                         </div>
                         <div class="row px-3"> <label class="mb-1">
-                            <h6 class="mb-0 text-sm">Username</h6>
-                        </label> <input class="mb-4 rounded border-0" type="text" name="username" placeholder="Enter username" required> </div>
+                            <h6 class="mb-0 text-sm">Name</h6>
+                        </label> <input class="mb-4 rounded border-0" type="text" name="product_name" placeholder="Enter name" required maxlength="300"></div>
                         <div class="row px-3"> <label class="mb-1">
-                            <h6 class="mb-0 text-sm">Email Address</h6>
-                        </label> <input class="mb-4 rounded border-0" type="email" name="email" placeholder="Enter email address" required> </div>
-                        <div class="row px-3"> <label class="mb-1">
-						<h6 class="mb-0 text-sm">Role</h6></label>
-                            <select class="form-select form-select-sm" required name="role">
-						  <option selected class="text-muted">Choose your role</option>
-						  <option value="cashier">Cashier</option>
-						  <option value="manager">Manager</option>
-						</select>
+                            <h6 class="mb-0 text-sm">Description</h6>
+                        </label> <textarea class="mb-4 rounded border-0" type="textarea" name="descr" placeholder="Enter description" required maxlength="500" rows="4"></textarea>
                         </div>
-                        <br>
-                        <div class="row px-3"> <label class="mb-1">
-                            <h6 class="mb-0 text-sm">Password</h6>
-                        </label> <input class="rounded mb-4 border-0 password" type="password" name="password" placeholder="Enter password" required id="password"></div>
+                        <div class="row px-3"> <label class="mb-1"><h6 class="mb-0 text-sm">Category</h6></label>
+                            <select class="mb-4 rounded border-0" name="category" required id="select">
+								<option selected value="null">Select category</option>
+								<option value="category_id1">categoryName1</option>
+								<option value="category_id2">categoryName2</option>
+							</select>
+                        </div>
                         <div class="container" id="error">&nbsp;
                             <br><br><br>
                         </div>
                         <div class="row mb-3 px-3 text-center">
+                            <button type="submit" class="btn text-center bg-c3" id="registr">Submit</button>
                         </div>
                     </form>
-                    <button class="btn text-center bg-c3" id="registr">Submit</button>
                 </div>
             </div>
         </div>
     </div>
     <script src="js/jquery3.6.js"></script>
     <script src="js/hover.js"></script>
-    <!-- <script src="js/validateUser.js"></script> -->
-    <script src="js/postUser.js"></script>
     <script src="js/bootstrap.bundle.js"></script>
 </body>
 

@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zlagoda</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-fluid px-1 px-md-5 px-lg-1 px-xl-5 py-5 mx-auto">
+        <div class="card card0 border-0 bg-c3">
+            <div class="row d-flex">
+                <div class="col-lg-6">
+                    <div class="card1 pb-5">
+                        <div class="row"> <img src="images/logo-body.png" class="logo" alt="logo"> </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 bg-c5 rounded-3">
+                    <form class="card2 card border-0 px-4 py-5 bg-c5 rounded-3" id="form" method="POST">
+                        <div class="row mb-4 px-3 text-center">
+                            <h1 class="mb-0 mr-4 mt-2 bg-c3 rounded">Update owned product</h1>
+                        </div>
+                        <div class="row px-3"> <label class="mb-1">
+                            <h6 class="mb-0 text-sm">UPC</h6></label>
+                            <select class="mb-4 rounded border-0" name="position" required>
+								<option selected value="null">Select upc</option>
+								<option value="upc1">upc1</option>
+							</select> </div>
+                        <div class="row px-3"> <label class="mb-1">
+                            <h6 class="mb-0 text-sm">Product</h6>
+                        </label>
+                            <select class="mb-4 rounded border-0" required name="product_id">
+							<option selected value="null">Select product</option>
+							<option value="product_id1">productName1</option>
+						</select>
+                        </div>
+                        <div class="row px-3"> <label class="mb-1">
+                            <h6 class="mb-0 text-sm">Price</h6>
+                        </label> <input class="mb-4 rounded border-0" type="text" name="sale_price" placeholder="Enter price" required></div>
+                        <div class="row px-3"> <label class="mb-1">
+                            <h6 class="mb-0 text-sm">Units in stock</h6>
+                        </label> <input class="mb-4 rounded border-0" type="number" name="units_in_stock" placeholder="Enter units" required></div>
+                        <div class="row px-3"> <label class="mb-1">
+                            <h6 class="mb-0 text-sm">Sale</h6>
+                        </label>
+                            <select class="mb-4 rounded border-0" required name="is_on_sale">
+							<option selected value="false">No</option>
+							<option value="true">Yes</option>
+						</select>
+                        </div>
+                        <div class="container" id="error">&nbsp;
+                            <br><br><br>
+                        </div>
+                        <div class="row mb-3 px-3 text-center">
+                            <button type="submit" class="btn text-center bg-c3" id="registr">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery3.6.js"></script>
+    <script src="js/hover.js"></script>
+    <script src="js/bootstrap.bundle.js"></script>
+</body>
+
+</html>

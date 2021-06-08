@@ -32,7 +32,14 @@ pub async fn create_new_user(
 
         match new_user_unvalidated.validate() {
             Ok(_) => match user_repo.create_user(new_user_unvalidated, &*crypto_svc).await {
-                Ok(usr) => HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "localhost:5000")).body(format!("User {} was successfully added", usr.username)),
+                Ok(usr) => {
+                    let resp = HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "http://localhost:5000"))
+                        .append_header(("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD, OPTIONS"))
+                        .body(format!("User {} was successfully added", usr.username));
+
+                    println!("{:?}", &resp);
+                    resp
+                },
                 Err(e) => HttpResponse::UnprocessableEntity().body(format!("{}", e)),
             },
             Err(e) => HttpResponse::UnprocessableEntity().body(format!("Invalid user data: {}", e)),

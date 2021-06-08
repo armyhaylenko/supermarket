@@ -11,6 +11,7 @@ use actix_web::{
 };
 use futures::TryFutureExt;
 use std::sync::Arc;
+use tracing::debug;
 use validator::Validate;
 
 #[get("/healthcheck")]
@@ -37,7 +38,7 @@ pub async fn create_new_user(
                         .append_header(("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD, OPTIONS"))
                         .body(format!("User {} was successfully added", usr.username));
 
-                    println!("{:?}", &resp);
+                    debug!("{:?}", &resp);
                     resp
                 },
                 Err(e) => HttpResponse::UnprocessableEntity().body(format!("{}", e)),

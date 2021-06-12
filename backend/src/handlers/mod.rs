@@ -136,6 +136,12 @@ pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web
     utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "cashier")
 }
 
+#[post("/manager_query/{query_name}")]
+pub async fn manager_query(req: HttpRequest, body: web::Json<serde_json::Value>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
+    let query_name = req.match_info().get("query_name").unwrap();
+    utils::handle_query_and_auth(&req, shop_repo.handle_manager_query(query_name, body.into_inner()).await.map(Some), "manager")
+}
+
 pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
     let tests_scope = web::scope("/tests").service(test_endpoints::get_most_recent_employee);
     let api_scope = web::scope("/api")
@@ -150,7 +156,8 @@ pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
         .service(return_agreement)
         .service(create_receipt)
         .service(delete_receipt)
-        .service(update_sale);
+        .service(update_sale)
+        .service(manager_query);
     let admin_scope = web::scope("/admin").service(create_new_user).service(get_user);
     server_cfg
         .service(healthcheck)

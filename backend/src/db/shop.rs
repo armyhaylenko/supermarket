@@ -17,11 +17,11 @@ pub enum Action<T> {
 }
 
 macro_rules! build_query {
-        ($self: ident, $json: expr, $qname: expr, $typ: ty, $($filter: expr),*) => {
+        ($self: ident, $json: expr, $qname: expr, $typ: ty $(,$filter: expr)*) => {
             sqlx::query_as::<_, $typ>(include_str!(concat!("../../sql/manager_queries/", $qname, ".sql")))
                     $(
                     .bind(&$json.get($filter)
-                        .ok_or(Report::msg(concat!("Invalid filter provided: could not find field ", $filter, " to string")))
+                        .ok_or(Report::msg(concat!("Invalid filter provided: could not find field ", $filter)))
                         .and_then(|j: &Value|
                                 j.as_str()
                                  .ok_or(Report::msg(concat!("Invalid filter provided: could not convert field ", $filter, " to string")))
@@ -425,7 +425,7 @@ impl SupermarketRepository {
         json: serde_json::Value,
     ) -> Result<String> {
         match query_name {
-            "get_all_cashiers" => build_query!(self, json, "get_all_cashiers", ShopEmployee,),
+            "get_all_cashiers" => build_query!(self, json, "get_all_cashiers", ShopEmployee),
             "get_all_products_by_category" => build_query!(self, json, "get_all_products_by_category", Product, "category_name"),
             _ => Ok(String::new()),
         }

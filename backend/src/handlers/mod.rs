@@ -34,8 +34,9 @@ pub async fn create_new_user(
         match new_user_unvalidated.validate() {
             Ok(_) => match user_repo.create_user(new_user_unvalidated, &*crypto_svc).await {
                 Ok(usr) => {
-                    let resp = HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "http://lvh.me:5000"))
-                        .append_header(("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD, OPTIONS"))
+                    let resp = HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*"))
+                        .append_header(("Access-Control-Allow-Methods", "GET, PUT, POST, PATCH, DELETE, OPTIONS"))
+                        .append_header(("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Toke"))
                         .body(format!("User {} was successfully added", usr.username));
 
                     debug!("{:?}", &resp);

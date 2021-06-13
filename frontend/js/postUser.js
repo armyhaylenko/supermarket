@@ -15,7 +15,7 @@ $(function() {
                 body: $("#form").serialize()
             }
 
-        ).then(resp => resp.json());
+        ).then(resp => resp.text());
         console.log(response);
         // fetch({
         //     url: "http://localhost:3000/admin/create_user",

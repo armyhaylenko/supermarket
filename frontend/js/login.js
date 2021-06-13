@@ -11,7 +11,7 @@ $(function () {
             },
             body: $("#form").serialize()
         }).then(resp => resp.text());
-        Cookies.set("ZLAGODA_AUTH_TOKEN", jwt);
+        Cookies.set("ZLAGODA_AUTH_TOKEN", jwt, { expires: 1 });
         let decodedToken = JSON.parse(atob(jwt.split('.')[1]));
         console.log(decodedToken);
     }

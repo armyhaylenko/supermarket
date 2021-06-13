@@ -17,8 +17,16 @@ pub enum Action<T> {
 }
 
 macro_rules! build_query {
-        ($self: ident, $json: expr, $qname: expr, $typ: ty $(,$filter: expr)*) => {
-            sqlx::query_as::<_, $typ>(include_str!(concat!("../../sql/manager_queries/", $qname, ".sql")))
+        ($self: ident, $qpath: expr, $typ: ty) => {
+            sqlx::query_as::<_, $typ>(include_str!($qpath))
+                    .fetch_all(&*$self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+                    .and_then(|_models| serde_json::to_string(&_models)
+                                                        .map_err(|err| Report::new(err)))
+        };
+        ($self: ident, $json: expr, $qpath: expr, $typ: ty $(,$filter: expr)*) => {
+            sqlx::query_as::<_, $typ>(include_str!($qpath))
                     $(
                     .bind(&$json.get($filter)
                         .ok_or(Report::msg(concat!("Invalid filter provided: could not find field ", $filter)))
@@ -425,8 +433,8 @@ impl SupermarketRepository {
         json: serde_json::Value,
     ) -> Result<String> {
         match query_name {
-            "get_all_cashiers" => build_query!(self, json, "get_all_cashiers", ShopEmployee),
-            "get_all_products_by_category" => build_query!(self, json, "get_all_products_by_category", Product, "category_name"),
+            "get_all_cashiers" => build_query!(self, json, "../../sql/manager_queries/get_all_cashiers.sql", ShopEmployee),
+            "get_all_products_by_category" => build_query!(self, json, "../../sql/manager_queries/get_all_products_by_category.sql", Product, "category_name"),
             _ => Ok(String::new()),
         }
     }
@@ -438,6 +446,10 @@ impl SupermarketRepository {
             .await
             .map(|res| res.map(|i32_r| i32_r.max_empl_id))
             .map_err(|e| Report::new(e))
+    }
+
+    pub async fn get_all_categories(&self) -> Result<Option<String>> {
+        build_query!(self, "../../sql/utils/get_all_categories.sql", Category).map(Some)
     }
 }
 

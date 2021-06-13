@@ -95,6 +95,21 @@ macro_rules! data_endpoint {
     };
 }
 
+macro_rules! data_endpoint_no_action {
+    ($endp_name: expr, $mthd_name: ident, $act: ident) => {
+        #[get($endp_name)]
+        async fn $mthd_name(req: HttpRequest, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
+            utils::handle_query_and_auth(&req, shop_repo.$act().await, "manager")
+        }
+    };
+    ($endp_name: expr, $mthd_name: ident, $typ: ty, $act: ident) => {
+         #[post($endp_name)]
+         async fn $mthd_name(req: HttpRequest, body: web::Json<$typ>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
+            utils::handle_query_and_auth(&req, shop_repo.$act(body.into_inner()).await, "manager")
+        }
+    };
+}
+
 data_endpoint!("/employee", employee, ShopEmployee, handle_employee);
 
 data_endpoint!("/client_card", client_card, ClientCard, handle_client_card);
@@ -111,23 +126,11 @@ data_endpoint!("/waybill", waybill, Waybill, handle_waybill);
 
 data_endpoint!("/return_agreement", return_agreement, ReturnAgreement, handle_return_agreement);
 
-#[post("/create_receipt")]
-pub async fn create_receipt(
-    req: HttpRequest,
-    body: web::Json<CreateReceipt>,
-    shop_repo: web::Data<Arc<SupermarketRepository>>,
-) -> impl Responder {
-    utils::handle_query_and_auth(&req, shop_repo.handle_create_receipt(body.into_inner()).await, "manager")
-}
+data_endpoint_no_action!("/create_receipt", create_receipt, CreateReceipt, handle_create_receipt);
 
-#[post("/delete_receipt")]
-pub async fn delete_receipt(
-    req: HttpRequest,
-    body: web::Json<Receipt>,
-    shop_repo: web::Data<Arc<SupermarketRepository>>,
-) -> impl Responder {
-    utils::handle_query_and_auth(&req, shop_repo.handle_delete_receipt(body.into_inner()).await, "manager")
-}
+data_endpoint_no_action!("/delete_receipt", delete_receipt, Receipt, handle_delete_receipt);
+
+data_endpoint_no_action!("/utils/get_all_categories", utils_get_all_categories, get_all_categories);
 
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
@@ -155,7 +158,8 @@ pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
         .service(create_receipt)
         .service(delete_receipt)
         .service(update_sale)
-        .service(manager_query);
+        .service(manager_query)
+        .service(utils_get_all_categories);
     let admin_scope = web::scope("/admin").service(create_new_user).service(get_user);
     server_cfg
         .service(healthcheck)

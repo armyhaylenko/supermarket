@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Zlagoda</title>
     <link href="css/bootstrap.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/gh/angular-ui/bower-ui-grid/ui-grid.min.css">
 	<link href="css/styles.css" rel="stylesheet">
+
 </head>
 <body>
       <div class="container-fluid bg-c1">
@@ -23,24 +25,8 @@
 			 </div>
 	    </div>
       </div>
-	  <div class="container-fluid">
-		<div class="row h-100">
-		<table class="table">
-			<thead>
-				<tr class="bg-c1">
-					<th scope="col">ID</th>
-					<th scope="col">Name</th>
-				</tr>
-			</thead>
-			<tbody class="text-white-50">
-				<tr>
-					<td id="category_id">ID</td>
-					<td id="category_name">Name</td>
-				</tr>
-			</tbody>
-			</table>
-		</div>
-	   </div>
+	  <div class="container-fluid w-100" style="height: 500px" id="jsGrid">
+	  </div>
 		<div class="container"><br>
 		&nbsp;
 			<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
@@ -56,6 +42,9 @@
         </div>
     </footer>
     <script src="js/jquery3.6.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/angular-ui/bower-ui-grid/ui-grid.min.js"></script>
+	<script src="js/showCategory.js"></script>
     <script src="js/hover.js"></script>
     <script src="js/bootstrap.bundle.js"></script>
 </body>

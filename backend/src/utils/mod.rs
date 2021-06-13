@@ -10,7 +10,9 @@ pub fn decode_token_to_user(token: &str, secret_key: &str) -> Result<Authenticat
     let decoding_key = DecodingKey::from_base64_secret(secret_key);
     let decoded_token: Result<AuthenticatedUser> = decoding_key
         .and_then(|key| {
-            let r = decode::<AuthenticatedUser>(&token, &key, &Validation::new(Algorithm::default()));
+            let mut validation = Validation::new(Algorithm::default());
+            validation.validate_exp = false;
+            let r = decode::<AuthenticatedUser>(&token, &key, &validation);
             debug!("{:?}", r);
             r
         })

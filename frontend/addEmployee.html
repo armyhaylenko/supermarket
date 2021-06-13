@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="col-lg-6 bg-c5 rounded-3">
-                    <form class="card2 card border-0 px-4 py-5 bg-c5 rounded-3" id="form" method="POST">
+                    <form class="card2 card border-0 px-4 py-5 bg-c5 rounded-3" id="form">
                         <div class="row mb-4 px-3 text-center">
                             <h1 class="mb-0 mr-4 mt-2 bg-c3 rounded">Add employee</h1>
                         </div>
@@ -36,7 +36,7 @@
                         </label> <input class="mb-4 rounded border-0" type="text" name="patronymic" placeholder="Enter patronymic" required maxlength="50"> </div>
                         <div class="row px-3"> <label class="mb-1">
                             <h6 class="mb-0 text-sm">Role</h6></label>
-                            <select class="mb-4 rounded border-0" name="position" required>
+                            <select class="mb-4 rounded border-0" name="user_role" required>
 								<option selected value="null">Select role</option>
 								<option value="manager">Manager</option>
 								<option value="cashier">Cashier</option>
@@ -62,15 +62,17 @@
                         <div class="container" id="error">&nbsp;
                             <br><br><br>
                         </div>
-                        <div class="row mb-3 px-3 text-center">
-                            <button type="submit" class="btn text-center bg-c3" id="registr">Submit</button>
-                        </div>
                     </form>
+                    <div class="row mb-3 px-3 text-center">
+                        <button class="btn text-center bg-c3" id="registr">Submit</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="js/jquery3.6.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script src="js/createEmployee.js"></script>
     <script src="js/hover.js"></script>
     <script src="js/bootstrap.bundle.js"></script>
 </body>

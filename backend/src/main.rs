@@ -1,4 +1,5 @@
-use actix_web::{middleware::Logger, App, HttpServer};
+use actix_cors::Cors;
+use actix_web::{http, middleware::Logger, App, HttpServer};
 use std::sync::Arc;
 use supermarket_management_system::db::{SupermarketRepository, UserRepository};
 use supermarket_management_system::*;
@@ -27,7 +28,14 @@ pub async fn main() -> std::io::Result<()> {
     info!("Starting server at http://{}:{}", connection_config.host, connection_config.port);
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin("http://localhost:5000")
+            .allowed_methods(vec!["GET", "POST", "OPTIONS"])
+            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT, http::header::CONTENT_TYPE])
+            .max_age(3600);
+
         App::new()
+            .wrap(cors)
             .wrap(Logger::default())
             .data(crypto_service.clone())
             .data(user_repository.clone())

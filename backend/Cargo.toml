@@ -5,6 +5,9 @@ authors = ["armyhaylenko <armyhaylenko@gmail.com>"]
 edition = "2018"
 include = ["src/**/*"]
 
+[net]
+git-fetch-with-cli = true
+
 
 [dependencies]
 actix-web = "4.0.0-beta.6"
@@ -29,6 +32,7 @@ jsonwebtoken = "7"
 rust-argon2 = "0.8.3"
 rand = "0.8.3"
 futures = { version = "0.3", features = ["compat"] }
+actix-cors = { git = "https://github.com/near/actix-extras", branch = "actix-web-4-beta.6" }
 
 [dev-dependencies]
 libc = "0.2"

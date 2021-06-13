@@ -8,12 +8,33 @@ use sqlx::PgPool;
 use std::collections::HashMap;
 use std::sync::Arc;
 use validator::Validate;
+use serde_json::Value;
 
 pub enum Action<T> {
     Create(T),
     Delete(T),
     Update(T),
 }
+
+macro_rules! build_query {
+        ($self: ident, $json: expr, $qname: expr, $typ: ty $(,$filter: expr)*) => {
+            sqlx::query_as::<_, $typ>(include_str!(concat!("../../sql/manager_queries/", $qname, ".sql")))
+                    $(
+                    .bind(&$json.get($filter)
+                        .ok_or(Report::msg(concat!("Invalid filter provided: could not find field ", $filter)))
+                        .and_then(|j: &Value|
+                                j.as_str()
+                                 .ok_or(Report::msg(concat!("Invalid filter provided: could not convert field ", $filter, " to string")))
+                            )?
+                        )  // only strings are present in tech reqs
+                    )*
+                    .fetch_all(&*$self.pool)
+                    .await
+                    .map_err(|err| Report::new(err))
+                    .and_then(|_models| serde_json::to_string(&_models)
+                                                        .map_err(|err| Report::new(err)))
+        }
+    }
 
 impl<T> Action<T> {
     pub async fn from_req(req: &HttpRequest, body: T) -> Result<Action<T>> {
@@ -397,16 +418,17 @@ impl SupermarketRepository {
             .map_err(|err| Report::new(err))
     }
 
-    pub async fn handle_manager_query<'a, T: Serialize + Deserialize<'a>>(
+
+    pub async fn handle_manager_query(
         &self,
         query_name: &str,
         json: serde_json::Value,
-    ) -> Result<Option<T>> {
-        let sql = match query_name {
-            "get_all_cashiers" => include_str!("../../sql/manager_queries/get_all_cashiers.sql"),
-            _ => "",
-        };
-        todo!()
+    ) -> Result<String> {
+        match query_name {
+            "get_all_cashiers" => build_query!(self, json, "get_all_cashiers", ShopEmployee),
+            "get_all_products_by_category" => build_query!(self, json, "get_all_products_by_category", Product, "category_name"),
+            _ => Ok(String::new()),
+        }
     }
 
     pub async fn get_most_recent_employee(&self) -> Result<Option<i32>> {

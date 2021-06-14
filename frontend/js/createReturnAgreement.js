@@ -8,10 +8,9 @@ $(function() {
             .map(s => s.split('='))
             .map(pair => pair.map(decodeURIComponent)));
         parsed.qty = parseInt(parsed.qty);
-        parsed.base_price = parseInt(parsed.base_price);
         parsed.empl_id = parseInt(parsed.empl_id);
         parsed.manufacturer_id = parseInt(parsed.manufacturer_id);
-        parsed.waybill_sum = 0;
+        parsed.return_agreement_sum = 0;
         let token = Cookies.get("ZLAGODA_AUTH_TOKEN");
         await fetch(url, {
             method: "POST",

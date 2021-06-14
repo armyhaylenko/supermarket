@@ -17,7 +17,9 @@
                 <div class="col-lg-6">
                     <div class="card1 pb-5">
                         <br><br><br><br>
-                        <div class="row"> <img src="images/logo-body.png" class="logo" alt="logo"> </div>
+                        <div class="row">
+                            <a href="adders.html"><img src="images/logo-body.png" class="logo" alt="logo"></a>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-6 bg-c5 rounded-3">
@@ -30,9 +32,8 @@
                         </label> <input class="mb-4 rounded border-0" type="date" name="sign_date" required></div>
                         <div class="row px-3"> <label class="mb-1">
                             <h6 class="mb-0 text-sm">Product UPC</h6></label>
-                            <select class="mb-4 rounded border-0" required name="product_upc">
+                            <select class="mb-4 rounded border-0" required name="product_upc" id="selectOwnedProduct">
 							<option selected value="null">Select product</option>
-							<option value="product_upc">product_upc</option>
 						</select>
                         </div>
                         <div class="row px-3"> <label class="mb-1">
@@ -40,35 +41,38 @@
                         </label> <input class="mb-4 rounded border-0" type="number" name="qty" required min="1" placeholder="Units of product"></div>
                         <div class="row px-3"> <label class="mb-1">
                             <h6 class="mb-0 text-sm">Price</h6>
-                        </label> <input class="mb-4 rounded border-0" type="text" name="qty" required placeholder="Enter price"></div>
+                        </label> <input class="mb-4 rounded border-0" type="text" name="base_price" required placeholder="Enter price"></div>
                         <div class="row px-3"> <label class="mb-1">
                             <h6 class="mb-0 text-sm">Manufacturer</h6>
                         </label>
-                            <select class="mb-4 rounded border-0" name="manufacturer_id">
+                            <select class="mb-4 rounded border-0" name="manufacturer_id" id="selectManufacturer">
 							<option selected value="null">Select manufacturer</option>
-							<option value="manufacturer_id1">manufacturerName1</option>
 						</select>
                         </div>
                         <div class="row px-3"> <label class="mb-1">
                             <h6 class="mb-0 text-sm">Employee</h6>
                         </label>
-                            <select class="mb-4 rounded border-0" name="empl_id">
+                            <select class="mb-4 rounded border-0" name="empl_id" id="selectEmpl">
 							<option selected value="null">Select employee</option>
-							<option value="empl_id1">emplName1</option>
 						</select>
                         </div>
                         <div class="container" id="error">&nbsp;
                             <br><br><br>
                         </div>
-                        <div class="row mb-3 px-3 text-center">
-                            <button type="submit" class="btn text-center bg-c3" id="registr">Submit</button>
-                        </div>
                     </form>
+                    <div class="row mb-3 px-3 text-center">
+                        <button class="btn text-center bg-c3" id="registr">Submit</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="js/jquery3.6.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script src="js/createReturnAgreement.js"></script>
+    <script src="js/getAllEmployee.js"></script>
+    <script src="js/getAllManufacturer.js"></script>
+    <script src="js/getAllOwnedProduct.js"></script>
     <script src="js/hover.js"></script>
     <script src="js/bootstrap.bundle.js"></script>
 </body>

@@ -1,7 +1,7 @@
 $(function() {
     let response;
     $("#registr").on("click", async function() {
-        let url = "http://localhost:3000/api/waybill?action=create";
+        let url = "http://localhost:3000/api/return_agreement?action=create";
         let urlencoded = $("#form").serialize();
         let parsed = Object.fromEntries(
             urlencoded.split('&')
@@ -26,7 +26,7 @@ $(function() {
             console.log(response);
         });
         if (response == 200) {
-            alert("Waybill was successfully added to DB");
+            alert("Return agreement was successfully added to DB");
         } else {
             alert("Something went wrong with input data, check input fields and try again")
         }

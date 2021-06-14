@@ -321,7 +321,6 @@ impl SupermarketRepository {
                 sqlx::query_as(sql)
                     .bind(w.waybill_date)
                     .bind(w.base_price)
-                    .bind(w.waybill_sum)
                     .bind(w.qty)
                     .bind(w.product_upc)
                     .bind(w.manufacturer_id)

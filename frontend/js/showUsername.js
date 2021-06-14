@@ -12,7 +12,7 @@ $(function() {
         } else {
             $(".hover").removeClass("disabled");
         }
-        $("#username").append(` <p class="bg-c3 badge loginB m-3" id="login">Username: ${username}</p>
+        $("#username").append(` <p class="bg-c3 badge loginB m-3" id="login" title="Log out">Username: ${username}</p>
                                 <p class="bg-c3 badge loginB m-3">Role: ${user_role}</p>`);
         $("#login").on('click', function() {
             let bool = confirm("Do you want to log out?");

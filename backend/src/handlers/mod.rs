@@ -132,6 +132,10 @@ data_endpoint_no_action!("/delete_receipt", delete_receipt, Receipt, handle_dele
 
 data_endpoint_no_action!("/utils/get_all_categories", utils_get_all_categories, get_all_categories);
 
+data_endpoint_no_action!("/utils/get_all_client_cards", utils_get_all_client_cards, get_all_client_cards);
+
+data_endpoint_no_action!("/utils/get_all_products", utils_get_all_products, get_all_products);
+
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
     utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "cashier")
@@ -159,7 +163,9 @@ pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
         .service(delete_receipt)
         .service(update_sale)
         .service(manager_query)
-        .service(utils_get_all_categories);
+        .service(utils_get_all_categories)
+        .service(utils_get_all_products)
+        .service(utils_get_all_client_cards);
     let admin_scope = web::scope("/admin").service(create_new_user).service(get_user);
     server_cfg
         .service(healthcheck)

@@ -435,6 +435,8 @@ impl SupermarketRepository {
         match query_name {
             "get_all_cashiers" => build_query!(self, json, "../../sql/manager_queries/get_all_cashiers.sql", ShopEmployee),
             "get_all_products_by_category" => build_query!(self, json, "../../sql/manager_queries/get_all_products_by_category.sql", Product, "category_name"),
+            "get_all_manufacturers" => build_query!(self, json, "../../sql/manager_queries/get_all_manufacturers.sql", Manufacturer),
+            "get_employee_by_last_name" => build_query!(self, json, "../../sql/manager_queries/get_employee_by_last_name.sql", ShopEmployee),
             _ => Ok(String::new()),
         }
     }

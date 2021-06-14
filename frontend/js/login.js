@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
     $("#login").on("click", login)
 
     async function login() {
@@ -14,6 +14,8 @@ $(function () {
         Cookies.set("ZLAGODA_AUTH_TOKEN", jwt, { expires: 1 });
         let decodedToken = JSON.parse(atob(jwt.split('.')[1]));
         console.log(decodedToken);
+        if (decodedToken != null) {
+            window.location.href = "index.html";
+        }
     }
 })
-

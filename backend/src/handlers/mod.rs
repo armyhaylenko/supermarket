@@ -35,7 +35,7 @@ pub async fn create_new_user(
             Ok(_) => match user_repo.create_user(new_user_unvalidated, &*crypto_svc).await {
                 Ok(usr) => {
                     let resp = HttpResponse::Ok()
-                        .body(format!("User {} was successfully added", usr.username));
+                        .body("Success");
 
                     resp
                 },

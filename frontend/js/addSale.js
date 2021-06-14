@@ -2,8 +2,6 @@ $("#add").on("click", addSale);
 let i = 0;
 
 function addSale() {
-    // $("[name*='sale" + i + "']").submit();
-    // i++;
     $("#sales").append(`<form method="POST" name="sale` + i + `">
     <div class="row px-3"> <label class="mb-1">
         <h6 class="mb-0 text-sm">Product upc</h6></label>

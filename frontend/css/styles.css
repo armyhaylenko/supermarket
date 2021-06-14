@@ -43,3 +43,8 @@ body {
     background-color: #9e7540;
     color: aliceblue;
 }
+
+.disabled {
+    pointer-events: none;
+    cursor: default;
+}

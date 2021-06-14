@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use validator::Validate;
 use serde_json::Value;
-
+#[derive(Debug)]
 pub enum Action<T> {
     Create(T),
     Delete(T),
@@ -317,6 +317,7 @@ impl SupermarketRepository {
             Action::Create(w) => {
                 let sql = include_str!("../../sql/waybill/create_waybill.sql");
                 w.validate()?;
+                tracing::debug!("manufacturer: {:?}", &w);
                 sqlx::query_as(sql)
                     .bind(w.waybill_date)
                     .bind(w.base_price)

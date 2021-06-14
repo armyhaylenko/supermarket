@@ -136,6 +136,12 @@ data_endpoint_no_action!("/utils/get_all_client_cards", utils_get_all_client_car
 
 data_endpoint_no_action!("/utils/get_all_products", utils_get_all_products, get_all_products);
 
+data_endpoint_no_action!("/utils/get_all_employee", utils_get_all_employee, get_all_employee);
+
+data_endpoint_no_action!("/utils/get_all_manufacturers", utils_get_all_manufacturers, get_all_manufacturers);
+
+data_endpoint_no_action!("/utils/get_all_owned_product", utils_get_all_owned_product, get_all_owned_product);
+
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
     utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "cashier")
@@ -165,6 +171,9 @@ pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
         .service(manager_query)
         .service(utils_get_all_categories)
         .service(utils_get_all_products)
+        .service(utils_get_all_employee)
+        .service(utils_get_all_manufacturers)
+        .service(utils_get_all_owned_product)
         .service(utils_get_all_client_cards);
     let admin_scope = web::scope("/admin").service(create_new_user).service(get_user);
     server_cfg

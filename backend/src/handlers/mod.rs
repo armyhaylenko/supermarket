@@ -155,7 +155,7 @@ data_endpoint_no_action!("/utils/get_all_products_by_receipt", utils_get_all_pro
 
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
-    utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "cashier")
+    utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "manager")
 }
 
 #[post("/manager_query/{query_name}")]

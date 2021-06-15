@@ -13,6 +13,7 @@ use futures::TryFutureExt;
 use std::sync::Arc;
 use tracing::debug;
 use validator::Validate;
+use actix_web::web::service;
 
 #[get("/healthcheck")]
 pub async fn healthcheck() -> impl Responder {
@@ -150,6 +151,8 @@ data_endpoint_no_action!("/utils/get_all_sales", utils_get_all_sales, get_all_sa
 
 data_endpoint_no_action!("/utils/get_all_waybill", utils_get_all_waybill, get_all_waybill);
 
+data_endpoint_no_action!("/utils/get_all_products_by_receipt", utils_get_all_products_by_receipt, get_all_products_by_receipt);
+
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
     utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "cashier")
@@ -186,7 +189,8 @@ pub fn init_app_config(server_cfg: &mut ServiceConfig) -> () {
         .service(utils_get_all_return_agreement)
         .service(utils_get_all_sales)
         .service(utils_get_all_waybill)
-        .service(utils_get_all_client_cards);
+        .service(utils_get_all_client_cards)
+        .service(utils_get_all_products_by_receipt);
     let admin_scope = web::scope("/admin").service(create_new_user).service(get_user);
     server_cfg
         .service(healthcheck)

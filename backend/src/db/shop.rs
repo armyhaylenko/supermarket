@@ -375,6 +375,7 @@ impl SupermarketRepository {
             prev_sum + (sale.price * Decimal::new(sale.qty as i64, 0))
         });
         let receipt_date = create_receipt.receipt_date;
+        let empl_id = create_receipt.empl_id;
         let vat = receipt_sum * Decimal::new(20, 2) / Decimal::new(120, 2);
         let receipt = Receipt {
             receipt_id: None,
@@ -382,6 +383,7 @@ impl SupermarketRepository {
             receipt_sum,
             vat,
             client_card_id: create_receipt.client_card_id,
+            empl_id
         };
         let sql = include_str!("../../sql/receipt/create_receipt.sql");
         let receipt: Receipt = sqlx::query_as::<_, Receipt>(sql)
@@ -452,7 +454,7 @@ impl SupermarketRepository {
             "get_price_and_qty_by_upc" => build_query!(self, json, "../../sql/manager_queries/get_price_and_qty_by_upc.sql", OwnedProduct, "product_upc"),
             "get_all_on_sale_products" => build_query!(self, "../../sql/manager_queries/get_all_on_sale_products.sql", OwnedProduct),
             "get_all_not_on_sale_products" => build_query!(self, "../../sql/manager_queries/get_all_not_on_sale_products.sql", OwnedProduct),
-            "get_waybills_from_to" => build_query!(self, json, "../../sql/manager_queries/get_waybills_from_to.sql", Waybill, "product_upc", "date_from", "date_to"),
+            "get_waybills_from_to" => build_query!(self, json, "../../sql/manager_queries/get_all_waybills_from_to.sql", Waybill, "product_upc", "date_from", "date_to"),
 
             _ => Ok(String::new()),
         }

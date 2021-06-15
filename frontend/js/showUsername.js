@@ -18,7 +18,7 @@ $(function() {
             let bool = confirm("Do you want to log out?");
             if (bool) {
                 Cookies.remove("ZLAGODA_AUTH_TOKEN");
-                location.reload();
+                window.location.href = "index.html"
             }
         });
     }

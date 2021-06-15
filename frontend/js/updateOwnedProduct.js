@@ -32,7 +32,7 @@ $(function() {
     });
     let response;
     $("#registr").on("click", async function() {
-        let url = "http://localhost:3000/api/owned_product?=update";
+        let url = "http://localhost:3000/api/owned_product?action=update";
         let urlencoded = $("#form").serialize();
         let request = Object.fromEntries(
             urlencoded.split('&')

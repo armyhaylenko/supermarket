@@ -17,7 +17,7 @@ $(function() {
     });
     let response;
     $("#registr").on("click", async function() {
-        let url = "http://localhost:3000/api/category?=update";
+        let url = "http://localhost:3000/api/category?action=update";
         let urlencoded = $("#form").serialize();
         let request = Object.fromEntries(
             urlencoded.split('&')

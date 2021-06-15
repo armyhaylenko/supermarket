@@ -1,3 +1,3 @@
-SELECT sale_price, units_in_stock
+SELECT *
 FROM "OwnedProduct"
 WHERE product_upc = $1

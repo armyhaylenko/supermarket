@@ -126,6 +126,7 @@ pub struct Receipt {
     #[sqlx(rename = "VAT")]
     pub vat: Decimal,
     pub client_card_id: Option<i32>,
+    pub empl_id: i32
 }
 
 #[derive(Serialize, Debug, Deserialize, Validate, sqlx::FromRow)]

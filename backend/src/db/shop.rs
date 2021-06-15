@@ -448,6 +448,12 @@ impl SupermarketRepository {
             "get_employee_by_last_name" => build_query!(self, json, "../../sql/manager_queries/get_employee_by_last_name.sql", ShopEmployee, "last_name"),
             "get_all_products" => build_query!(self, "../../sql/manager_queries/get_all_products.sql", Product),
             "get_all_categories" => build_query!(self, "../../sql/utils/get_all_categories.sql", Category),
+            "get_all_products_by_product" => build_query!(self, json, "../../sql/manager_queries/get_all_products_by_product.sql", Product, "product_name"),
+            "get_price_and_qty_by_upc" => build_query!(self, json, "../../sql/manager_queries/get_price_and_qty_by_upc.sql", OwnedProduct, "product_upc"),
+            "get_all_on_sale_products" => build_query!(self, "../../sql/manager_queries/get_all_on_sale_products.sql", OwnedProduct),
+            "get_all_not_on_sale_products" => build_query!(self, "../../sql/manager_queries/get_all_not_on_sale_products.sql", OwnedProduct),
+            "get_waybills_from_to" => build_query!(self, json, "../../sql/manager_queries/get_waybills_from_to.sql", Waybill, "product_upc", "date_from", "date_to"),
+
             _ => Ok(String::new()),
         }
     }

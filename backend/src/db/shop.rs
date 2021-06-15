@@ -486,7 +486,7 @@ impl SupermarketRepository {
         let sql = include_str!("../../sql/utils/get_all_products_by_receipt.sql");
 
         let maybe_product = sqlx::query_as::<_, Product>(sql)
-            .bind(json.as_i64().ok_or(Report::msg("Could not convert receipt_id to int"))?)
+            .bind(json["receipt_id"].as_i64().ok_or(Report::msg("Could not convert receipt_id to int"))?)
             .fetch_optional(&*self.pool)
             .await
             .map_err(|err| Report::new(err))?;

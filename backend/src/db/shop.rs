@@ -482,7 +482,17 @@ impl SupermarketRepository {
         build_query!(self, "../../sql/utils/get_all_waybill.sql", Waybill).map(Some)
     }
     pub async fn get_all_products_by_receipt(&self, json: serde_json::Value) -> Result<Option<String>> {
-        build_query!(self, json, "../../sql/utils/get_all_products_by_receipt.sql", Product, "receipt_id").map(Some)
+
+        let sql = include_str!("../../sql/utils/get_all_products_by_receipt.sql");
+
+        let maybe_product = sqlx::query_as::<_, Product>(sql)
+            .bind(json.as_i64().ok_or(Report::msg("Could not convert receipt_id to int"))?)
+            .fetch_optional(&*self.pool)
+            .await
+            .map_err(|err| Report::new(err))?;
+
+        let maybe_product_json = maybe_product.and_then(|p| serde_json::to_string(&p).ok());
+        Ok(maybe_product_json)
     }
 }
 

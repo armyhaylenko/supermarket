@@ -346,6 +346,7 @@ impl SupermarketRepository {
             Action::Create(ra) => {
                 let sql = include_str!("../../sql/return_agreement/create_return_agreement.sql");
                 ra.validate()?;
+                tracing::debug!("{:?}", &ra);
                 sqlx::query_as(sql)
                     .bind(ra.sign_date)
                     .bind(ra.qty)
@@ -360,7 +361,7 @@ impl SupermarketRepository {
             Action::Delete(ra) => {
                 let sql = include_str!("../../sql/return_agreement/delete_return_agreement.sql");
                 sqlx::query_as(sql)
-                    .bind(ra.sign_date)
+                    .bind(ra.return_agreement_id)
                     .fetch_optional(&*self.pool)
                     .await
                     .map_err(|err| Report::new(err))

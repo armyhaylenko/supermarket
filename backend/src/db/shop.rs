@@ -468,6 +468,18 @@ impl SupermarketRepository {
     pub async fn get_all_owned_product(&self) -> Result<Option<String>> {
         build_query!(self, "../../sql/utils/get_all_owned_products.sql", OwnedProduct).map(Some)
     }
+    pub async fn get_all_receipt(&self) -> Result<Option<String>> {
+        build_query!(self, "../../sql/utils/get_all_receipt.sql", Receipt).map(Some)
+    }
+    pub async fn get_all_return_agreement(&self) -> Result<Option<String>> {
+        build_query!(self, "../../sql/utils/get_all_return_agreement.sql", ReturnAgreement).map(Some)
+    }
+    pub async fn get_all_sales(&self) -> Result<Option<String>> {
+        build_query!(self, "../../sql/utils/get_all_sales.sql", Sale).map(Some)
+    }
+    pub async fn get_all_waybill(&self) -> Result<Option<String>> {
+        build_query!(self, "../../sql/utils/get_all_waybill.sql", Waybill).map(Some)
+    }
 }
 
 #[derive(Serialize, Debug, Deserialize, sqlx::FromRow)]

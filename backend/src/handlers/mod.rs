@@ -86,72 +86,72 @@ pub async fn login(
 }
 
 macro_rules! data_endpoint {
-    ($endp_name: expr, $mthd_name: ident, $typ: ty, $act: ident) => {
+    ($endp_name: expr, $mthd_name: ident, $typ: ty, $act: ident, $authlvl: literal) => {
          #[post($endp_name)]
          async fn $mthd_name(req: HttpRequest, body: web::Json<$typ>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
             let body = body.into_inner();
             let action_fut = Action::from_req(&req, body);
-            utils::handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.$act(act)).await, "manager")
+            utils::handle_query_and_auth(&req, action_fut.and_then(|act| shop_repo.$act(act)).await, $authlvl)
         }
     };
 }
 
 macro_rules! data_endpoint_no_action {
-    ($endp_name: expr, $mthd_name: ident, $act: ident) => {
+    ($endp_name: expr, $mthd_name: ident, $act: ident, $authlvl: literal) => {
         #[get($endp_name)]
         async fn $mthd_name(req: HttpRequest, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
-            utils::handle_query_and_auth(&req, shop_repo.$act().await, "manager")
+            utils::handle_query_and_auth(&req, shop_repo.$act().await, $authlvl)
         }
     };
-    ($endp_name: expr, $mthd_name: ident, $typ: ty, $act: ident) => {
+    ($endp_name: expr, $mthd_name: ident, $typ: ty, $act: ident, $authlvl: literal) => {
          #[post($endp_name)]
          async fn $mthd_name(req: HttpRequest, body: web::Json<$typ>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
-            utils::handle_query_and_auth(&req, shop_repo.$act(body.into_inner()).await, "manager")
+            utils::handle_query_and_auth(&req, shop_repo.$act(body.into_inner()).await, $authlvl)
         }
     };
 }
 
-data_endpoint!("/employee", employee, ShopEmployee, handle_employee);
+data_endpoint!("/employee", employee, ShopEmployee, handle_employee, "manager");
 
-data_endpoint!("/client_card", client_card, ClientCard, handle_client_card);
+data_endpoint!("/client_card", client_card, ClientCard, handle_client_card, "manager");
 
-data_endpoint!("/manufacturer", manufacturer, Manufacturer, handle_manufacturer);
+data_endpoint!("/manufacturer", manufacturer, Manufacturer, handle_manufacturer, "manager");
 
-data_endpoint!("/product", product, Product, handle_product);
+data_endpoint!("/product", product, Product, handle_product, "manager");
 
-data_endpoint!("/owned_product", owned_product, OwnedProduct, handle_owned_product);
+data_endpoint!("/owned_product", owned_product, OwnedProduct, handle_owned_product, "manager");
 
-data_endpoint!("/category", category, Category, handle_category);
+data_endpoint!("/category", category, Category, handle_category, "manager");
 
-data_endpoint!("/waybill", waybill, Waybill, handle_waybill);
+data_endpoint!("/waybill", waybill, Waybill, handle_waybill, "manager");
 
-data_endpoint!("/return_agreement", return_agreement, ReturnAgreement, handle_return_agreement);
+data_endpoint!("/return_agreement", return_agreement, ReturnAgreement, handle_return_agreement, "manager");
 
-data_endpoint_no_action!("/create_receipt", create_receipt, CreateReceipt, handle_create_receipt);
+data_endpoint_no_action!("/create_receipt", create_receipt, CreateReceipt, handle_create_receipt, "manager");
 
-data_endpoint_no_action!("/delete_receipt", delete_receipt, Receipt, handle_delete_receipt);
+data_endpoint_no_action!("/delete_receipt", delete_receipt, Receipt, handle_delete_receipt, "manager");
 
-data_endpoint_no_action!("/utils/get_all_categories", utils_get_all_categories, get_all_categories);
+data_endpoint_no_action!("/utils/get_all_categories", utils_get_all_categories, get_all_categories, "manager");
 
-data_endpoint_no_action!("/utils/get_all_client_cards", utils_get_all_client_cards, get_all_client_cards);
+data_endpoint_no_action!("/utils/get_all_client_cards", utils_get_all_client_cards, get_all_client_cards, "manager");
 
-data_endpoint_no_action!("/utils/get_all_products", utils_get_all_products, get_all_products);
+data_endpoint_no_action!("/utils/get_all_products", utils_get_all_products, get_all_products, "manager");
 
-data_endpoint_no_action!("/utils/get_all_employee", utils_get_all_employee, get_all_employee);
+data_endpoint_no_action!("/utils/get_all_employee", utils_get_all_employee, get_all_employee, "manager");
 
-data_endpoint_no_action!("/utils/get_all_manufacturers", utils_get_all_manufacturers, get_all_manufacturers);
+data_endpoint_no_action!("/utils/get_all_manufacturers", utils_get_all_manufacturers, get_all_manufacturers, "manager");
 
-data_endpoint_no_action!("/utils/get_all_owned_product", utils_get_all_owned_product, get_all_owned_product);
+data_endpoint_no_action!("/utils/get_all_owned_product", utils_get_all_owned_product, get_all_owned_product, "manager");
 
-data_endpoint_no_action!("/utils/get_all_receipt", utils_get_all_receipt, get_all_receipt);
+data_endpoint_no_action!("/utils/get_all_receipt", utils_get_all_receipt, get_all_receipt, "manager");
 
-data_endpoint_no_action!("/utils/get_all_return_agreement", utils_get_all_return_agreement, get_all_return_agreement);
+data_endpoint_no_action!("/utils/get_all_return_agreement", utils_get_all_return_agreement, get_all_return_agreement, "manager");
 
-data_endpoint_no_action!("/utils/get_all_sales", utils_get_all_sales, get_all_sales);
+data_endpoint_no_action!("/utils/get_all_sales", utils_get_all_sales, get_all_sales, "manager");
 
-data_endpoint_no_action!("/utils/get_all_waybill", utils_get_all_waybill, get_all_waybill);
+data_endpoint_no_action!("/utils/get_all_waybill", utils_get_all_waybill, get_all_waybill, "manager");
 
-data_endpoint_no_action!("/utils/get_all_products_by_receipt", utils_get_all_products_by_receipt, get_all_products_by_receipt);
+data_endpoint_no_action!("/utils/get_all_products_by_receipt", utils_get_all_products_by_receipt, Receipt, get_all_products_by_receipt, "manager");
 
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {

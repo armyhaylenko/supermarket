@@ -151,7 +151,7 @@ data_endpoint_no_action!("/utils/get_all_sales", utils_get_all_sales, get_all_sa
 
 data_endpoint_no_action!("/utils/get_all_waybill", utils_get_all_waybill, get_all_waybill, "manager");
 
-data_endpoint_no_action!("/utils/get_all_products_by_receipt", utils_get_all_products_by_receipt, Receipt, get_all_products_by_receipt, "manager");
+data_endpoint_no_action!("/utils/get_all_products_by_receipt", utils_get_all_products_by_receipt, serde_json::Value, get_all_products_by_receipt, "manager");
 
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {

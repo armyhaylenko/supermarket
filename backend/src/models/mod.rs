@@ -150,5 +150,6 @@ pub struct CreateSale {
 pub struct CreateReceipt {
     pub receipt_date: NaiveDate,
     pub client_card_id: Option<i32>,
+    pub empl_id: i32,
     pub sales: Vec<CreateSale>,
 }

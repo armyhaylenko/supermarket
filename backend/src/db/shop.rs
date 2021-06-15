@@ -4,7 +4,7 @@ use color_eyre::{Report, Result};
 use futures::{StreamExt, TryFutureExt};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
+use sqlx::{PgPool, Transaction, Postgres};
 use std::collections::HashMap;
 use std::sync::Arc;
 use validator::Validate;
@@ -417,14 +417,22 @@ impl SupermarketRepository {
     }
 
     pub async fn handle_update_sale(&self, sale: Sale) -> Result<Option<Sale>> {
-        sqlx::query_as(include_str!("../../sql/sale/update_sale.sql"))
+        let transaction: Transaction<Postgres> = self.pool.begin().await?;
+        let maybe_sale = sqlx::query_as(include_str!("../../sql/sale/update_sale.sql"))
             .bind(sale.receipt_id)
             .bind(sale.product_upc)
             .bind(sale.price)
             .bind(sale.qty)
             .fetch_optional(&*self.pool)
             .await
-            .map_err(|err| Report::new(err))
+            .map_err(|err| Report::new(err));
+        let _ = sqlx::query_as::<_, Receipt>(include_str!("../../sql/sale/update_sale_receipt.sql"))
+            .bind(sale.receipt_id)
+            .fetch_optional(&*self.pool)
+            .await
+            .map_err(|err| Report::new(err));
+        transaction.commit().await?;
+        maybe_sale
     }
 
 

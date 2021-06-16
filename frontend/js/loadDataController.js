@@ -19,7 +19,10 @@ async function loadDataController(filter, endpoint, filteredData) {
     }
     let parsed = JSON.parse(all_categories_json);
     let r = parsed.filter(el => _.isEqual(takeSameProperties(el, filterKeys), filter));
-    filteredData = r;
+    filteredData.splice(0, filteredData.length);
+    for(let i = 0; i < r.length; i++) {
+        filteredData[i] = r[i];
+    }
     console.log(r);
     return r;
 }

@@ -28,6 +28,8 @@ $(async function() {
         }
     });
 
+    let filteredData = parsed;
+
 
     $("#filter").on('click', function() {
         $("#jsGrid").jsGrid({
@@ -38,7 +40,7 @@ $(async function() {
             editing: false,
             filtering: true,
             controller: {
-                loadData: filter => loadDataController(filter, "get_all_owned_product")
+                loadData: filter => loadDataController(filter, "get_all_owned_product", filteredData)
             },
 
             fields: [
@@ -55,6 +57,10 @@ $(async function() {
                 args.cancel = true;
             }
         });
+    })
+
+    $("#print").on("click", function() {
+        convertToCSVAndDownload(filteredData, "owned_products_");
     })
 
 })

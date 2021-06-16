@@ -30,6 +30,8 @@ $(async function() {
         }
     });
 
+    let filteredData = parsed;
+
 
     $("#filter").on('click', function() {
         $("#jsGrid").jsGrid({
@@ -40,7 +42,7 @@ $(async function() {
             editing: false,
             filtering: true,
             controller: {
-                loadData: filter => loadDataController(filter, "get_all_return_agreement")
+                loadData: filter => loadDataController(filter, "get_all_return_agreement", filteredData)
             },
 
             fields: [
@@ -59,6 +61,10 @@ $(async function() {
                 args.cancel = true;
             }
         });
+    })
+
+    $("#print").on("click", function() {
+        convertToCSVAndDownload(filteredData, "return_agreements_");
     })
 
 })

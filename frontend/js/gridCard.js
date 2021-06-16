@@ -32,7 +32,7 @@ $(async function() {
         }
     });
 
-    let filteredData = [];
+    let filteredData = parsed;
 
     $("#filter").on('click', function() {
         $("#jsGrid").jsGrid({

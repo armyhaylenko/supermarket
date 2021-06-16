@@ -131,31 +131,31 @@ data_endpoint_no_action!("/create_receipt", create_receipt, CreateReceipt, handl
 
 data_endpoint_no_action!("/delete_receipt", delete_receipt, Receipt, handle_delete_receipt, "manager");
 
-data_endpoint_no_action!("/utils/get_all_categories", utils_get_all_categories, get_all_categories, "manager");
+data_endpoint_no_action!("/utils/get_all_categories", utils_get_all_categories, get_all_categories, "both");
 
-data_endpoint_no_action!("/utils/get_all_client_cards", utils_get_all_client_cards, get_all_client_cards, "manager");
+data_endpoint_no_action!("/utils/get_all_client_cards", utils_get_all_client_cards, get_all_client_cards, "both");
 
-data_endpoint_no_action!("/utils/get_all_products", utils_get_all_products, get_all_products, "manager");
+data_endpoint_no_action!("/utils/get_all_products", utils_get_all_products, get_all_products, "both");
 
-data_endpoint_no_action!("/utils/get_all_employee", utils_get_all_employee, get_all_employee, "manager");
+data_endpoint_no_action!("/utils/get_all_employee", utils_get_all_employee, get_all_employee, "both");
 
-data_endpoint_no_action!("/utils/get_all_manufacturers", utils_get_all_manufacturers, get_all_manufacturers, "manager");
+data_endpoint_no_action!("/utils/get_all_manufacturers", utils_get_all_manufacturers, get_all_manufacturers, "both");
 
-data_endpoint_no_action!("/utils/get_all_owned_product", utils_get_all_owned_product, get_all_owned_product, "manager");
+data_endpoint_no_action!("/utils/get_all_owned_product", utils_get_all_owned_product, get_all_owned_product, "both");
 
-data_endpoint_no_action!("/utils/get_all_receipt", utils_get_all_receipt, get_all_receipt, "manager");
+data_endpoint_no_action!("/utils/get_all_receipt", utils_get_all_receipt, get_all_receipt, "both");
 
-data_endpoint_no_action!("/utils/get_all_return_agreement", utils_get_all_return_agreement, get_all_return_agreement, "manager");
+data_endpoint_no_action!("/utils/get_all_return_agreement", utils_get_all_return_agreement, get_all_return_agreement, "both");
 
-data_endpoint_no_action!("/utils/get_all_sales", utils_get_all_sales, get_all_sales, "manager");
+data_endpoint_no_action!("/utils/get_all_sales", utils_get_all_sales, get_all_sales, "both");
 
-data_endpoint_no_action!("/utils/get_all_waybill", utils_get_all_waybill, get_all_waybill, "manager");
+data_endpoint_no_action!("/utils/get_all_waybill", utils_get_all_waybill, get_all_waybill, "both");
 
-data_endpoint_no_action!("/utils/get_all_products_by_receipt", utils_get_all_products_by_receipt, serde_json::Value, get_all_products_by_receipt, "manager");
+data_endpoint_no_action!("/utils/get_all_products_by_receipt", utils_get_all_products_by_receipt, serde_json::Value, get_all_products_by_receipt, "both");
 
 #[post("/update_sale")]
 pub async fn update_sale(req: HttpRequest, body: web::Json<Sale>, shop_repo: web::Data<Arc<SupermarketRepository>>) -> impl Responder {
-    utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "manager")
+    utils::handle_query_and_auth(&req, shop_repo.handle_update_sale(body.into_inner()).await, "both")
 }
 
 #[post("/manager_query/{query_name}")]

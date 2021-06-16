@@ -41,7 +41,12 @@ pub fn handle_auth(req: &HttpRequest) -> Result<String> {
 pub fn has_auth_level(req: &HttpRequest, auth_level: String) -> bool {
     let auth = handle_auth(&req);
 
-    auth.contains(&auth_level)
+    if auth_level.eq("both") {
+        true
+    }
+    else {
+        auth.contains(&auth_level)
+    }
 }
 
 fn query_result_to_http_response<'a, T: Serialize + Deserialize<'a>>(r: Result<Option<T>>) -> HttpResponse {

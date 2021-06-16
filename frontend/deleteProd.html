@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zlagoda</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-fluid px-1 px-md-5 px-lg-1 px-xl-5 py-5 mx-auto">
+        <div class="card card0 border-0 bg-c3">
+            <div class="row d-flex">
+                <div class="col-lg-6">
+                    <div class="card1 pb-5">
+                        <div class="row">
+                            <a href="deleters.html"><img src="images/logo-body.png" class="logo" alt="logo"> </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 bg-c5 rounded-3">
+                    <form class="card2 card border-0 px-4 py-5 bg-c5 rounded-3" id="form">
+                        <div class="row mb-4 px-3 text-center">
+                            <h1 class="mb-0 mr-4 mt-2 bg-c3 rounded">Delete product</h1>
+                        </div>
+                        <br><br><br><br><br>
+                        <div class="row px-3"> <label class="mb-1">
+                            <h6 class="mb-0 text-sm">product id</h6>
+                        </label> <select class="mb-4 rounded border-0" name="product_id" placeholder="Enter id" required id="selectProduct">
+							<option value="null" selected>Select product</option>
+							</select> </div>
+                        <br><br><br><br><br><br><br><br>
+
+                    </form>
+                    <div class="row mb-3 px-3 text-center">
+                        <button class="btn text-center bg-c3" id="registr">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery3.6.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script src="js/deleteProduct.js"></script>
+    <script src="js/hover.js"></script>
+    <script src="js/bootstrap.bundle.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+logo
+
+old logo color="#be8a62"
+
+palette
+
+palette color darkest = "#85603f"
+palette 2 color = "#9e7540"
+palette 3 color = "#bd9354"
+palette lightest color = "#e3d18a"

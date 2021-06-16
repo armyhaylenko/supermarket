@@ -17,41 +17,21 @@
                 <a class="btn bg-c3 badge loginB m-3" id="back" href="index.html">Home</a>
             </div>
             <div class="col-4 text-center">
-                <h1 class="navbar-brand text-center badge-lg bg-c2 rounded-3 m-3">Show receipt</h1>
+                <h1 class="navbar-brand text-center badge-lg bg-c2 rounded-3 m-3">Receipts</h1>
             </div>
-            <div class="col-4 text-end">
+            <div class="col-4 text-end" id="username">
                 <a class="btn bg-c3 badge loginB m-3" id="login" href="login.html">Login</a>
             </div>
         </div>
     </div>
-    <div class="container-fluid">
-        <div class="row h-100">
-            <table class="table">
-                <thead>
-                    <tr class="bg-c1">
-                        <th scope="col">ID</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Sum</th>
-                        <th scope="col">VAT</th>
-                        <th scope="col">Client card</th>
-                    </tr>
-                </thead>
-                <tbody class="text-white-50">
-                    <tr>
-                        <td id="receipt_id">ID</td>
-                        <td id="receipt_date">Date</td>
-                        <td id="receipt_sum">Units</td>
-                        <td id="VAT">Sum</td>
-                        <td id="client_card_id">Client card</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="container-fluid w-100" id="jsGrid">
+
+        <!-- show data here -->
+
     </div>
     <div class="container"><br> &nbsp;
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     </div>
-    <footer class="footer mt-auto bg-c1 py-1 text-white">
+    <footer class="footer mt-auto bg-c1 py-1 text-white fixed-bottom">
         <div class="text-center offset-lg-0 col-lg-12">
             <address>
             Develoved by:<br>
@@ -62,6 +42,8 @@
         </div>
     </footer>
     <script src="js/jquery3.6.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script src="js/showUsername.js"></script>
     <script src="js/hover.js"></script>
     <script src="js/bootstrap.bundle.js"></script>
 </body>

@@ -7,10 +7,9 @@ $(function() {
         let username = decodedToken.username;
         let user_role = decodedToken.user_role;
         console.log(user_role);
+        $(".hover").removeClass("disabled");
         if (user_role == "cashier") {
-            $(".cashier").removeClass("disabled");
-        } else {
-            $(".hover").removeClass("disabled");
+            $(".manager").addClass("disabled");
         }
         $("#username").append(` <p class="bg-c3 badge loginB m-3" id="login" title="Log out">Username: ${username}</p>
                                 <p class="bg-c3 badge loginB m-3">Role: ${user_role}</p>`);

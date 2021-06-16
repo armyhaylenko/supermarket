@@ -9,7 +9,7 @@ $(async function() {
 
     $("#jsGrid").jsGrid({
         width: "100%",
-        height: "400px",
+        height: "600px",
         sorting: true,
         paging: true,
         editing: false,
@@ -32,7 +32,7 @@ $(async function() {
     $("#filter").on('click', function() {
         $("#jsGrid").jsGrid({
             width: "100%",
-            height: "400px",
+            height: "600px",
             sorting: true,
             paging: true,
             editing: false,

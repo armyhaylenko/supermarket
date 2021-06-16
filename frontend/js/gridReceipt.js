@@ -39,19 +39,7 @@ $(async function() {
             editing: false,
             filtering: true,
             controller: {
-                loadData: async function(filter) {
-                    let all_categories_json = await fetch("http://localhost:3000/api/utils/get_all_sales", {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${Cookies.get("ZLAGODA_AUTH_TOKEN")}`
-                        }
-                    }).then(r => r.json());
-                    let parsed = JSON.parse(all_categories_json);
-                    console.log(parsed);
-                    let result;
-                    console.log(filter);
-                    return parsed;
-                }
+                loadData: filter => loadDataController(filter, "get_all_receipt")
             },
 
             fields: [

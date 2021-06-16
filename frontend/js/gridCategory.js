@@ -45,11 +45,11 @@ $(async function() {
                     let parsed = JSON.parse(all_categories_json);
                     console.log(filter);
                     let result;
-                    if (filter.category_id != undefined) {
+                    if (filter.category_id !== undefined) {
                         result = [parsed.find(el => el.category_id == filter.category_id)];
                         console.log(result);
                     }
-                    if (filter.category_name != "") {
+                    if (filter.category_name !== "") {
                         result = [parsed.find(el => el.category_name == filter.category_name)];
                         console.log(result);
                     }

@@ -94,7 +94,9 @@
 }
 
 .jsgrid-cell {
+    word-wrap: break-word;
     border: #e3d18a 1px solid;
+    white-space: pre-wrap;
 }
 
 .jsgrid-grid-body .jsgrid-row:first-child .jsgrid-cell,
@@ -111,6 +113,7 @@
 }
 
 .jsgrid-row>.jsgrid-cell {
+    word-wrap: break-word;
     background: #e3d18a;
 }
 
@@ -135,6 +138,7 @@
 }
 
 .jsgrid-selected-row>.jsgrid-cell {
+    word-wrap: break-word;
     background: #9e7540;
 }
 

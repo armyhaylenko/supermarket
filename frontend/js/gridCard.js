@@ -32,6 +32,7 @@ $(async function() {
         }
     });
 
+    let filteredData = [];
 
     $("#filter").on('click', function() {
         $("#jsGrid").jsGrid({
@@ -42,7 +43,7 @@ $(async function() {
             editing: false,
             filtering: true,
             controller: {
-                loadData: filter => loadDataController(filter, "get_all_client_cards")
+                loadData: filter => loadDataController(filter, "get_all_client_cards", filteredData)
             },
 
             fields: [
@@ -63,6 +64,10 @@ $(async function() {
                 args.cancel = true;
             }
         });
+    });
+
+    $("#print").on("click", function() {
+        convertToCSVAndDownload(filteredData, "client_cards_");
     })
 
 })

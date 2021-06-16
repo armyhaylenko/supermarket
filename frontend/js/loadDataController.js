@@ -1,4 +1,4 @@
-async function loadDataController(filter, endpoint) {
+async function loadDataController(filter, endpoint, filteredData) {
     let all_categories_json = await fetch("http://localhost:3000/api/utils/" + endpoint, {
         method: "GET",
         headers: {
@@ -19,6 +19,7 @@ async function loadDataController(filter, endpoint) {
     }
     let parsed = JSON.parse(all_categories_json);
     let r = parsed.filter(el => _.isEqual(takeSameProperties(el, filterKeys), filter));
+    filteredData = r;
     console.log(r);
     return r;
 }

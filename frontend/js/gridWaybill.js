@@ -31,6 +31,8 @@ $(async function() {
         }
     });
 
+    let filteredData = parsed;
+
 
     $("#filter").on('click', function() {
         $("#jsGrid").jsGrid({
@@ -41,7 +43,7 @@ $(async function() {
             editing: false,
             filtering: true,
             controller: {
-                loadData: filter => loadDataController(filter, "get_all_waybill")
+                loadData: filter => loadDataController(filter, "get_all_waybill", filteredData)
             },
 
             fields: [
@@ -61,6 +63,10 @@ $(async function() {
                 args.cancel = true;
             }
         });
+    })
+
+    $("#print").on("click", function() {
+        convertToCSVAndDownload(filteredData, "waybills_");
     })
 
 })

@@ -25,6 +25,7 @@ $(async function() {
         }
     });
 
+    let filteredData = parsed;
 
     $("#filter").on('click', function() {
         $("#jsGrid").jsGrid({
@@ -55,6 +56,10 @@ $(async function() {
                     }
                     console.log(result);
                     console.log(parsed);
+                    filteredData.splice(0, filteredData.length);
+                    for(let i = 0; filteredData.length; i++) {
+                        filteredData[i] = result[i];
+                    }
                     return result;
                 }
             },
@@ -70,6 +75,10 @@ $(async function() {
                 args.cancel = true;
             }
         });
+    });
+
+    $("#print").on("click", function() {
+        convertToCSVAndDownload(filteredData, "categories_");
     })
 
 })
